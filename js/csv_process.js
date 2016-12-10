@@ -1,4 +1,4 @@
-//Assumes you've got jquery and underscore.js
+//Assumes you've got underscore.js loaded
 
 /**
  * Takes data as received from d3.csv and processes it ready for use
@@ -26,7 +26,7 @@ function CsvProcessor(csv_data,
     function apply_manual_overrides() {
 
         var cdd = me.column_descriptions_data 
-        
+
         _.each(me.manual_overrides, function(overrides, col_name) {
             var this_col_desc = cdd[col_name]
             // Iterate through each value setting cdd
