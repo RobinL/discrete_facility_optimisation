@@ -247,7 +247,6 @@ function CsvProcessor(csv_data,
     var me = this;
     this.manual_overrides = _.clone(manual_overrides)
     this.original_csv_data = _.clone(csv_data)
-    this.column_descriptions_data = manual_overrides;
     process_column_descriptions()
     parse_columns()
     this.filter_data(default_filter) 
