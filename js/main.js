@@ -1,8 +1,10 @@
 var utils = new UtilityFunctions()
 
+
+
 d3.csv("data/data.csv", function(data) {
 
-
+    //
 
     var column_descriptions_overrides = {}
 
@@ -10,7 +12,8 @@ d3.csv("data/data.csv", function(data) {
 
     var model = new SupplyAndDemandModel(csv_processed)
 
-    model.find_solution()
+
+    model.allocate_each_demand_to_closest_supply_in_closeness_order()
 
 
     

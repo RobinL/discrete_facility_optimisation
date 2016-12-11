@@ -8,6 +8,8 @@
 
 // 
 
+//FIRST THING - write well-organised code that simply allocates each demand to closest court, unless it's full, in which case, do not allocate
+
 var optimisation_target = "duration_min"  //Where's best to put this?
 
 function deep_copy_object(obj) {
@@ -19,6 +21,7 @@ function deep_copy_object(obj) {
 function Supply(row) {
 
 	var me = this 
+
 
 	this.reset_allocations = function() {
     	this.allocations = {}	//Populated in form of {demand_id:allocation}
@@ -73,9 +76,10 @@ function Supply(row) {
 
     //Initialisation code:
 	var supply_cols = ["supply","supply_id","supply_lat","supply_lng","supply_name"]
-	var new_row = deep_copy_object(row)
+
+	// var new_row = deep_copy_object(row)
 	_.each(supply_cols, function(c) {
-		me[c] = new_row[c]
+		me[c] = row[c]
 	})
 
 	this.reset_allocations()
@@ -103,6 +107,38 @@ Supply.prototype = {
     	}
     },
 
+
+    get toString() {
+        var lines = []
+        lines.push(`Supply ID ${this.supply_id}: ${this.supply_name}`)
+        lines.push(`Total supply: ${this.supply}`)
+        lines.push(`Allocated = ${this.supply_allocated}`)
+        _.each(this.allocations, function(a) {
+            lines.push(a.toString)
+        })
+        lines.push(`Unallocated = ${this.supply_unallocated}`)
+
+        return lines.join("\n")
+
+
+    },
+
+    get loss() {
+        // Iterate through allocations computing loss from each one
+        var total_loss = 0
+        _.each(this.allocations, function(allocation) {
+            var demand = allocation.demand_object
+            var demand_id = allocation.demand_object.demand_id
+            var supply_id = allocation.supply_object.supply_id
+
+            var loss_scale = demand.supply_source_stats[supply_id][optimisation_target]
+            var loss_quantity = allocation.allocation_size
+            var this_loss = loss_scale*loss_quantity
+            total_loss+=this_loss
+        })
+        return total_loss
+    }
+
     
 }
 
@@ -115,15 +151,17 @@ function Demand(row) {
     	this.allocations = {}	//Populated in form of {supply_id:allocation}
     }
 
-	 //Initialisation code:
+
+	 //Copy data from each 
 	var demand_cols = ["demand","demand_id","demand_lat","demand_lng","demand_name"]
-	var new_row = deep_copy_object(row)
+	// var new_row = deep_copy_object(row)
 	_.each(demand_cols, function(c) {
-		me[c] = new_row[c]
+		me[c] = row[c]
 	
     })
 
-    me.set_supply_source_stats = function(row) {
+    this.set_supply_source_stats = function(row) {
+
 
         if (row["demand_id"] != this["demand_id"]) {
             throw new Error("You attempted to assign stats to the wrong demand source"); 
@@ -138,9 +176,27 @@ function Demand(row) {
 
     }
 
-    this.supply_source_stats = {}
-    this.supply_stats_ordered_by_closest = [] //[ supplyid1, supplyid2 etc] 
 
+    this.allocate_all_demand_to_supply_in_closeness_order = function(supply_collection) {
+
+        // While there's still demand left to be allocated
+        for (var i = 0; i < me.supply_ids_ordered_by_closest.length; i++) {
+            
+            var supply_id = me.supply_ids_ordered_by_closest[i]
+            var this_supply = supply_collection.suppliers[supply_id]
+
+            this_supply.attempt_allocation(me)
+
+            if (me.is_fully_allocated) {
+                break;
+            }
+            
+        }
+
+    }
+
+    this.supply_source_stats = {}
+    this.supply_ids_ordered_by_closest = [] //[ supplyid1, supplyid2 etc] 
 	this.reset_allocations()
 
 
@@ -152,7 +208,8 @@ function Demand(row) {
 Demand.prototype = {
 
     get demand_allocated() {
-        reduce_sum = function(a,b) {return a.allocation_size + b.allocation_size}
+
+        reduce_sum = function(a,b) {return a + b.allocation_size}
         return _.reduce(this.allocations, reduce_sum,0)
     },
 
@@ -161,7 +218,8 @@ Demand.prototype = {
 
     },
 
-    get is_full() {
+
+    get is_fully_allocated() {
     	if (this.demand_unallocated <=0) {
     		return true
     	} else {
@@ -170,7 +228,24 @@ Demand.prototype = {
     },
 
     get closest_supply_id() {
-        return this.supply_stats_ordered_by_closest[0]
+
+        return this.supply_ids_ordered_by_closest[0]
+    },
+    
+    get loss() {
+        // Iterate through allocations computing loss from each one
+        var total_loss = 0
+        _.each(this.allocations, function(allocation) {
+            var demand = allocation.demand_object
+            var demand_id = allocation.demand_object.demand_id
+            var supply_id = allocation.supply_object.supply_id
+
+            var loss_scale = demand.supply_source_stats[supply_id][optimisation_target]
+            var loss_quantity = allocation.allocation_size
+            var this_loss = loss_scale*loss_quantity
+            total_loss+=this_loss
+        })
+        return total_loss
     }
 
 }
@@ -179,6 +254,13 @@ function Allocation(demand_object, supply_object, allocation_size) {
 	this.demand_object = demand_object
 	this.supply_object = supply_object
 	this.allocation_size = allocation_size
+}
+
+
+Allocation.prototype = {
+    get toString() {
+        return `    An allocation of ${this.allocation_size} from Demander ${this.demand_object.demand_id}:${this.demand_object.demand_name}::${this.demand_object.demand} -> Supplier ${this.supply_object.supply_id}:${this.supply_object.supply_name}::${this.supply_object.supply}`
+    }
 }
 
 //You give SupplyCollection rows and it 
@@ -228,6 +310,14 @@ function SupplyCollection(processed_csv) {
 
 SupplyCollection.prototype = {
 
+
+    get total_supply() {
+        return _.reduce(this.suppliers, function(a,b) {
+            return a + b.supply
+        },0)
+
+    }
+
 }
 
 
@@ -244,24 +334,7 @@ function DemandCollection(processed_csv) {
     }
 
 
-    this.set_initial_demand_allocation_order = function() {
-        //Initial demand allocation is by allocating closest
-        //Sort demanders by 
 
-        // from each deamnder we get a supplier
-
-    
-
-        var demand_order = _.sortBy(me.demanders, function(demander) {
-
-            var closest_supply_stats = demander.supply_source_stats[demander.closest_supply_id]
-            return closest_supply_stats[optimisation_target]
-
-        })
-
-        debugger;
-
-    }
 
     this.iterate_demand_allocation = function() {
 
@@ -299,12 +372,14 @@ function DemandCollection(processed_csv) {
 
             var sss_ordered = _.sortBy(sss, function(d) {return d["duration_min"]})
             var mapfn = function(d) {return d.supply_id}
-            demander.supply_stats_ordered_by_closest = _.map(sss_ordered, mapfn)
+
+            demander.supply_ids_ordered_by_closest = _.map(sss_ordered, mapfn)
 
             ;
         })
 
     }
+
 
     var me = this;
 
@@ -318,6 +393,21 @@ function DemandCollection(processed_csv) {
 }
 
 
+DemandCollection.prototype = {
+    //TODO
+    get allocations() {
+        return "not implemented yet"
+    },
+
+    get total_demand() {
+        return _.reduce(this.demanders, function(a,b) {
+            return a + b.demand
+        },0)
+
+    }
+}
+
+
 function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min") {
     //Has a supply collection and a demand collection
     var me = this;
@@ -325,10 +415,41 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
     // Hack the processed_csv to include a column called 'optimisation target'
 
-
-
     this.supply_collection = new SupplyCollection(processed_csv)
     this.demand_collection = new DemandCollection(processed_csv)
+    this.allocation_collection = []  // Is this useful?  Possibly not as all allocations are stored in their demand and supply units.
+    //So we can always retrieve all allocations by iterating through either the supply collection or the demand collection.
+    //Get allocations could be a method on the demand collection.
+
+
+
+
+    // It's the model, not the demand collection that stores the allocation order.
+    // The demand collection just holds a list of all demand items.
+
+
+    function get_demanders_order_in_order_of_distance_to_nearest_supply() {
+        //Initial demand allocation is by allocating closest
+        //Sort demanders by 
+
+        // from each deamnder we get a supplier
+        var dc = me.demand_collection
+        var sc = me.supply_collection
+
+        var allocation_order = _.sortBy(dc.demanders, function(demander) {
+            var closest_supply_stats = demander.supply_source_stats[demander.closest_supply_id]
+            return closest_supply_stats[optimisation_target]
+        })
+
+        return allocation_order
+
+
+    }
+
+    function allocate_to_nearest(demand,supply) {
+
+        // var allocation = new Allocation()
+    }
 
     
 
@@ -346,10 +467,26 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
     //Then attempt bilateral swaps
 
-    this.find_solution = function() {
 
-        me.demand_collection.set_initial_demand_allocation_order()
+    this.allocate_each_demand_to_closest_supply_in_closeness_order = function() {
 
+        // First need to 
+        var demand_order = get_demanders_order_in_order_of_distance_to_nearest_supply()
+
+        _.each(demand_order, function(demand) {
+            // Iterate through supply sites by closeness until fully allocated
+            // supply.attempt_allocation 
+            //If demand has unallocated > 0 by end, then supply must be full and we stop performing allocations.
+            demand.allocate_all_demand_to_supply_in_closeness_order(me.supply_collection)
+
+        })
+
+        me.supply_collection.suppliers[0].loss
+        debugger;
+
+
+
+        
 
 
 
