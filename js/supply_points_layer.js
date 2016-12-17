@@ -3,6 +3,27 @@
 function SupplyPointsLayer() {
 	// As a vis componenet, this should only deal with drawing the data
     
+    this.draw_from_scratch = function() {
+
+        VMT.mapholder.redraw()
+
+        //Get layer 
+        g = d3.select("#supply_location_layer")
+        
+        //Now our 'current points' contain all the information we need to draw the voronoi map
+        //For each filtered point, covert the lat lng into x y point in svg space
+        var g = d3.select("#supply_location_layer")
+
+        var supply_locations_sel = g.selectAll(".supply_locations")
+            .data(me.suppliers_array)
+            .enter()
+
+        
+        supply_locations_sel.append("circle")
+            .attr("class", "supply_locations")
+
+    }
+
 
     this.update = function() {
 
@@ -33,32 +54,8 @@ function SupplyPointsLayer() {
                 return 1
             })
             .attr("stroke", "black")
-
-
-
+            
     }
-
-
-	this.draw_from_scratch = function() {
-
-		VMT.mapholder.redraw()
-
-        //Get layer 
-        g = d3.select("#supply_location_layer")
-        
-        //Now our 'current points' contain all the information we need to draw the voronoi map
-        //For each filtered point, covert the lat lng into x y point in svg space
-        var g = d3.select("#supply_location_layer")
-
-        var supply_locations_sel = g.selectAll(".supply_locations")
-            .data(me.suppliers_array)
-            .enter()
-
-        
-        supply_locations_sel.append("circle")
-            .attr("class", "supply_locations")
-
-	}
 
     this.recalculate_supply_xys = function() {
         //Use leaflet's internal functions to convert the 

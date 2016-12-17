@@ -1,5 +1,7 @@
 // Initially just show the demand points and draw lines to the prisons
-
+Handlebars.registerHelper('short_number', function(value) {
+    return d3.format(",.1f")(value)
+});
 
 function DemandAllocationLayer() {
 
@@ -9,10 +11,30 @@ function DemandAllocationLayer() {
 
 
   //Take the geojson stream and convert to the leaflet coordinate system
-  function projectPoint(x, y) {
+  function leafletProjectPoint(x, y) {
       var point = VMT.mapholder.map.latLngToLayerPoint(new L.LatLng(y, x));
       this.stream.point(point.x, point.y);
   }
+
+  function nullProjectPoint(x, y) {
+        this.stream.point(x, y);
+  }
+
+  function path_generator(d) {
+        return d ? "M" + d.join("L") + "Z" : null
+  }
+
+  var voronoi_fn = d3.voronoi()
+                .x(function(d) {
+                    return VMT.mapholder.latlng_to_xy(d.demand_lat, d.demand_lng).x;
+                })
+                .y(function(d) {
+                    return VMT.mapholder.latlng_to_xy(d.demand_lat, d.demand_lng).y;
+                })
+                .extent([
+                    [-1e6, -1e6],
+                    [1e6, 1e6]  //Need silly extent otherwise some circles get deleted when you zoom in too much
+                ])
 
 
   this.update = function() {
@@ -21,6 +43,7 @@ function DemandAllocationLayer() {
 
     update_demand_circles()
     update_demand_lines()
+    update_demand_voronoi()
 
   }
 
@@ -38,23 +61,24 @@ function DemandAllocationLayer() {
 
         
         draw_demand_circles()
-        
         draw_demand_lines()
+        draw_demand_voronoi()
+        draw_clipping_mask()
 
         this.update()
 
-    }
+  }
 
   function draw_clipping_mask() {
 
     // Draw clip
         var transform = d3.geoTransform({
-            point: projectPoint
+            point: leafletProjectPoint
         })
 
         var path = d3.geoPath().projection(transform);
 
-        //Draw the clipping path and apply it
+        // Draw the clipping path and apply it
         me.clip_path_layer.select("#EWClipPath").remove()
         me.clip_path_layer.append("svg:clipPath")
             .attr("id", "EWClipPath")
@@ -153,27 +177,50 @@ function DemandAllocationLayer() {
                 return line_width_scale(d.allocation_size)
             })
 
+
+
   }
 
   function draw_demand_voronoi() {
 
     // Need to get suitable datastructure.
     // Each demand has a 'topallocation'
-
-    var voronoi_fn = d3.voronoi()
-                .x(function(d) {
-                    return d.x ;
-                })
-                .y(function(d) {
-                    return d.y ;
-                })
-
-
-    var diagram = voronoi_fn.polygons(me.courts)
+    var voronoi_cell_data = voronoi_fn.polygons(VMT.model.demand_collection_array)
+    var v_cells = me.voronoi_cells_layer.selectAll(".voronoicells").data(voronoi_cell_data)
+    v_cells.enter().append("path")
+            .attr("class", "voronoicells")
+            .attr("fill", function(d) {
+                return "black"
+            })
+          
+          .on("mouseover", voronoi_cell_on_mouseover)
 
   }
 
   function update_demand_voronoi() {
+
+    var voronoi_cell_data = voronoi_fn.polygons(VMT.model.demand_collection_array)
+
+    var v_cells = me.voronoi_cells_layer.selectAll(".voronoicells").data(voronoi_cell_data)
+
+    v_cells
+            .style("fill-opacity", 0.5)
+            .attr("d", function(d) {
+                return path_generator(d)
+            })
+        
+
+  }
+
+  function voronoi_cell_on_mouseover() {
+    
+    var template_dict = this.__data__.data
+    var source = $("#debug_demand_info").html();
+    var template = Handlebars.compile(source);
+    var html = template(template_dict);
+    debugger;
+
+    d3.select('#debug_panel').html(html)
 
   }
 
