@@ -8,6 +8,14 @@
 
 // 
 
+//SWAP STRATEGY:
+//Precompute 'list of neighbours' for each demand point as soon as we see the 'demand points'
+//To compute a swap, unallocate from a, and its neighbour b.  
+//Allocate to a then b
+//Allocate to b then a
+//Choose the best loss.
+
+
 //FIRST THING - write well-organised code that simply allocates each demand to closest court, unless it's full, in which case, do not allocate
 
 var optimisation_target = "duration_min"  //Where's best to put this?
@@ -80,7 +88,7 @@ function Supply(row) {
 
 
     //Initialisation code:
-	var supply_cols = ["supply","supply_id","supply_lat","supply_lng","supply_name"]
+	var supply_cols = VMT.settings.supply_cols
 
 	// var new_row = deep_copy_object(row)
 	_.each(supply_cols, function(c) {
@@ -141,7 +149,7 @@ function Demand(row) {
 
 
 	 //Copy data from each 
-	var demand_cols = ["demand","demand_id","demand_lat","demand_lng","demand_name"]
+	var demand_cols = VMT.settings.demand_cols
 	// var new_row = deep_copy_object(row)
 	_.each(demand_cols, function(c) {
 		me[c] = row[c]
@@ -202,7 +210,7 @@ function Demand(row) {
 
         var template = {"loss": loss, "count": addition}
 
-        if (utils.key_not_in_dict(order, me.loss_stats_by_allocation_order)) {
+        if (VMT.utils.key_not_in_dict(order, me.loss_stats_by_allocation_order)) {
             me.loss_stats_by_allocation_order[order] = template;
         } else {
             // If already exists recompute average loss for this allocation order
@@ -221,9 +229,6 @@ function Demand(row) {
         }
 
     }
-
-
-
 
 
 
@@ -262,7 +267,15 @@ Demand.prototype = {
         var reduce_fn = function(a,b) {return a + b.loss}
         return _.reduce(this.allocations, reduce_fn ,0)
             
-        }
+    },
+
+    get top_supply_allocation() {
+        // Sort allocations by allocation size and return
+        _.sort(this.allocations, function(a) {
+            return a.allocation_size
+        }) 
+
+    }
 
 }
 
@@ -291,7 +304,11 @@ Allocation.prototype = {
 
     get toString() {
         return `    An allocation of ${this.allocation_size} from Demander ${this.demand_object.demand_id}:${this.demand_object.demand_name}::${this.demand_object.demand} -> Supplier ${this.supply_object.supply_id}:${this.supply_object.supply_name}::${this.supply_object.supply}`
-    }
+    },
+
+
+
+
 }
 
 //You give SupplyCollection rows and it 
@@ -420,16 +437,26 @@ function DemandCollection(processed_csv) {
 
 
 DemandCollection.prototype = {
-    //TODO
-    get allocations() {
-        return "not implemented yet"
-    },
 
     get total_demand() {
         return _.reduce(this.demanders, function(a,b) {
             return a + b.demand
         },0)
 
+    },
+
+    get min_demand() {
+        var min_demander = _.min(this.demanders, function(d) {
+            return d.demand
+        })
+        return min_demander.demand
+    },
+
+    get max_demand() {
+        var max_demander = _.max(this.demanders, function(d) {
+            return d.demand
+        })
+        return max_demander.demand 
     }
 }
 
@@ -528,7 +555,7 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
     this.compute_best_possible_loss()
     this.allocate_each_demand_to_closest_supply_in_closeness_order()
-    
+
 
 }
 
@@ -549,7 +576,34 @@ SupplyAndDemandModel.prototype = {
         var reduce_fn = function(a,b) {return a + b.loss}
         return _.reduce(this.allocation_collection, reduce_fn, 0)
 
-    }
+    },
+
+    get demand_collection_array() {
+
+        var return_array = []
+        _.each(this.demand_collection.demanders, function(d) {
+            return_array.push(d)
+        })
+        return return_array
+
+
+    },
+
+    get min_allocation() {
+        var min_a = _.min(this.allocation_collection, function(d) {
+            return d.allocation_size
+        })
+        return min_a.allocation_size
+    },
+
+    get max_allocation() {
+        var max_a = _.max(this.allocation_collection, function(d) {
+            return d.allocation_size
+        })
+        return max_a.allocation_size
+    },
+
+    
 }
 
 

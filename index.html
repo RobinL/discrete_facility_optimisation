@@ -3,22 +3,33 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-
-
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css"/>
 </head>
 
 <body>
 
 
+  <div id='map'></div>
 
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/2.2.0/topojson.min.js"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="http://underscorejs.org/underscore-min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
 
+  <script src="js/namespace.js"></script>
   <script src="js/utilities.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/csv_process.js"></script>
   <script src="js/supply_demand_model.js"></script>
+  <script src="js/controller.js"></script>
+
+  <script src="js/map.js"></script>
+  <script src="js/supply_points_layer.js"></script>
+  <script src="js/demand_allocation_layer.js"></script>
+
   <script src="js/main.js"></script>
 
 </body>
