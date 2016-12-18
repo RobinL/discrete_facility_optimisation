@@ -3,7 +3,7 @@ var VMTs = VMT.settings
 
 // Paths to data
 VMTs.shapefile_path = "topojson/uk_boundaries.json"
-VMTs.csv_path = "data/data.csv"
+VMTs.csv_path = "data/data2.csv"
 
 // Which variable to use to optimise
 VMTs.optimisation_target = "duration_min"

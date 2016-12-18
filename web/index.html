@@ -65,6 +65,10 @@
 			<td class="overall_stats">Largest allocation:</td>
 			<td> {{top_allocation.supply_object.supply_name}}</td>
 		</tr>
+    <tr>
+      <td class="overall_stats">Travel time to largest allocation:</td>
+      <td> {{short_number this.top_allocation_time}}</td>
+    </tr>
 	
 
 	</table>
@@ -74,12 +78,14 @@
 		<th>Supply name</th>
 		<th>Supply id</th>
 		<th>Allocation size</th>
+    <th>Loss</th>
 	</tr>
 	{{#each allocations}}
 	<tr>
 		<td>{{this.supply_object.supply_name}}</td>
 		<td>{{this.supply_object.supply_id}}</td>
 		<td>{{short_number this.allocation_size}}</td>
+    <td>{{short_number this.loss}}</td>
      </tr>
     {{/each}}
     </table>

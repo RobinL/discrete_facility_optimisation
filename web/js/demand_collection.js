@@ -54,6 +54,37 @@ function DemandCollection(processed_csv) {
 
     }
 
+    // For each demand in collection, get neighbours
+    this.assign_neighbours = function() {
+
+        // Compute voronoi
+        var voronoi = d3.voronoi()
+            .x(function(d) {
+                return VMT.mapholder.latlng_to_xy(d.demand_lat, d.demand_lng).x;
+            })
+            .y(function(d) {
+                return VMT.mapholder.latlng_to_xy(d.demand_lat, d.demand_lng).y;
+            })
+
+        // Want to get links associated with this cell 
+        var diagram = voronoi(me.demanders_array)
+        var links = diagram.links()
+
+        // Links is an array with source and target
+        _.each(me.demanders, function(demander, demand_id) {
+            me.demanders[demand_id]["neighbours"] = {}
+            _.each(links, function(link) {
+                if (link.source.demand_id == demander.demand_id) {
+                    me.demanders[demand_id]["neighbours"][link.target.demand_id] = link.target
+                }
+                if (link.target.demand_id == demander.demand_id) {
+                    me.demanders[demand_id]["neighbours"][link.source.demand_id] = link.source
+                }
+
+            })
+        })
+    }
+
 
     var me = this;
 
@@ -63,6 +94,7 @@ function DemandCollection(processed_csv) {
 
     this.add_all()
     this.order_suppliers_by_closest()
+    this.assign_neighbours()
 
 }
 
@@ -88,5 +120,9 @@ DemandCollection.prototype = {
             return d.demand
         })
         return max_demander.demand 
+    },
+
+    get demanders_array() {
+        return _.map(this.demanders, function(d) {return d})
     }
 }

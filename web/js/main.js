@@ -18,6 +18,7 @@ function parse_ajax_topo_data(topo_data) {
 function parse_ajax_csv_data(csv_data) {
 
 	var csv_data = d3.csvParse(csv_data[0])
+	_.each(csv_data, function(d) {d["supply"] = d["supply"]*0.5})
 	VMT.csv_processed = new CsvProcessor(csv_data, VMT.settings.column_descriptions_overrides)
 
 }

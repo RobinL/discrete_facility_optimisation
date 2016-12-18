@@ -156,7 +156,7 @@ function DemandAllocationLayer() {
     var min = VMT.model.min_allocation
     var max = VMT.model.max_allocation
     var line_colour_scale = VMT.utils.get_colour_scale_from_min_max_and_range_linear(min, max, colour_range)
-    var line_width_scale = d3.scaleLinear().domain([min,max]).range([0.5,3])
+    var line_width_scale = d3.scaleLinear().domain([min,max]).range([0,3])
     
     me.demand_lines_layer.selectAll(".demand_data_lines")
           .data(d3_data)

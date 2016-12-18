@@ -108,7 +108,6 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
             })[0]
             demanders_in_order.push(this_demand)
             delete dc[this_demand.demand_id]
-            debugger;
         }
 
       
@@ -120,17 +119,64 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         // Now allocate
         me.allocate_from_order(demanders_in_order)
 
+    }
 
+    function attempt_swap(a,b) {
 
+        // Original loss
+        var original_loss = a.loss + b.loss
 
+        
+        a.unallocate_all_supply()
+        b.unallocate_all_supply()
+        a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+        b.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
 
+        var new_loss_ab = a.loss + b.loss  
+
+        a.unallocate_all_supply()
+        b.unallocate_all_supply()
+        b.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+        a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+
+        var new_loss_ba = a.loss + b.loss  
+
+        if (new_loss_ab<new_loss_ba) {
+            a.unallocate_all_supply()
+            b.unallocate_all_supply()
+            a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+            b.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+        }
+
+    }
+
+    this.reallocate_pairwise = function() {
+        _.each(me.demand_collection_array, function(demander) {
+            
+            var neighbours = _.map(demander.neighbours, function(d) {return d})
+
+            _.each(neighbours, function(neighbour) {
+                attempt_swap(neighbour, demander)
+            })
+        })
     }
 
     
 
     this.compute_best_possible_loss()
     this.allocate_each_demand_to_closest_supply_in_closeness_order()
-    this.allocate_by_marginal_loss()
+
+    for (var i = 0; i < 10; i++) {
+        this.allocate_by_marginal_loss()
+        console.log(me.total_loss)
+    }
+    console.log("----")
+    for (var i = 0; i < 4; i++) {
+        this.reallocate_pairwise()
+        console.log(me.total_loss)
+    }
+    
+  
     
 
     // Iteratively allocate based on greatest loss.
