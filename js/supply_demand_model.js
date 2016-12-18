@@ -47,18 +47,6 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         return allocation_order
     }
 
-    function get_demanders_order_from_moving_average(ma_order) {
-        var dc = me.demand_collection
-
-        var allocation_order = _.sortBy(dc.demanders, function(demander) {
-            
-            return -demander.moving_average_relative_loss[ma_order]
-        })
-
-        return allocation_order
-
-    }
-
 
 
     function reset_all_allocations() {
@@ -73,8 +61,7 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
         var allocation_counter = 1
         _.each(demand_objects_in_order, function(demand) {
-            demand.allocate_to_supply_in_closeness_order(me.supply_collection)
-            demand.update_loss_stats_by_allocation_order(demand.loss,allocation_counter, add_to_counter=true)
+            demand.allocate_to_supply_in_closeness_order(me.supply_collection, allocation_counter)
             allocation_counter += 1
         })
         
@@ -90,33 +77,14 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
         _.each(me.demand_collection.demanders, function(demand) {
  
-            demand.allocate_to_supply_in_closeness_order(me.supply_collection)
+            demand.allocate_to_supply_in_closeness_order(me.supply_collection, allocation_order = 1, record_stats=false)
 
-            demand.update_loss_stats_by_allocation_order(demand.loss,1, add_to_counter=false)
-            me.allocation_collection
             demand.unallocate_all_supply()
 
         })
 
     }
     
-
-    //The first allocation technique is to iterate through demand objects
-    //Assign as much as possible to their closest supply until its full
-    //Then allocate to second closest etc.
-
-    //But if we do this, some will get assigned to second best,
-    //We want to calculate the loss in allocating to second best.
-
-    //Then re-do allocation order by 'how bad it was to allocate to second best'
-    //And reallocate.
-
-    //For each demand object, keep track of loss associated with being the nth demand allocated.
-
-    //Then attempt bilateral swaps
-
-
-
     this.allocate_each_demand_to_closest_supply_in_closeness_order = function() {
 
         var demand_order = get_demanders_order_in_order_of_distance_to_nearest_supply()
@@ -124,14 +92,46 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
                 
     }
 
-    this.allocate_each_demand_iterate_order = function(ma_order) {
-        var demand_order = get_demanders_order_from_moving_average(ma_order)
-        me.allocate_from_order(demand_order)
+    this.allocate_by_marginal_loss = function() {
+
+        //Allocate each one and then find the next best by marginal loss
+        var allocation_counter = 1
+        var dc = me.demand_collection.demanders
+        var dc = _.clone(dc)
+        var demanders_in_order = []
+
+        // Make a copy of the demand collaction because we will be popping from it!
+
+        function get_demand_by_marginal_loss(allocation_number) {
+            var this_demand = _.sortBy(dc, function(demand) {
+                return -demand.marginal_loss(allocation_number)
+            })[0]
+            demanders_in_order.push(this_demand)
+            delete dc[this_demand.demand_id]
+            debugger;
+        }
+
+      
+        while (_.keys(dc).length>0) {
+            var this_demand = get_demand_by_marginal_loss(allocation_counter)
+            allocation_counter +=1
+        }
+
+        // Now allocate
+        me.allocate_from_order(demanders_in_order)
+
+
+
+
+
     }
+
+    
 
     this.compute_best_possible_loss()
     this.allocate_each_demand_to_closest_supply_in_closeness_order()
-    this.allocate_each_demand_iterate_order(3)
+    this.allocate_by_marginal_loss()
+    
 
     // Iteratively allocate based on greatest loss.
 
@@ -146,7 +146,6 @@ SupplyAndDemandModel.prototype = {
             _.each(supply.allocations, function(allocation) {
                 allocation_collection.push(allocation)
             })
-
         })
         return allocation_collection
     },
@@ -155,7 +154,6 @@ SupplyAndDemandModel.prototype = {
         var total_loss = 0
         var reduce_fn = function(a,b) {return a + b.loss}
         return _.reduce(this.allocation_collection, reduce_fn, 0)
-
     },
 
     get demand_collection_array() {
@@ -165,8 +163,6 @@ SupplyAndDemandModel.prototype = {
             return_array.push(d)
         })
         return return_array
-
-
     },
 
     get min_allocation() {

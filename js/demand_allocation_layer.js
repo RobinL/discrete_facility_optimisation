@@ -173,8 +173,6 @@ function DemandAllocationLayer() {
                 return line_width_scale(d.allocation_size)
             })
 
-
-
   }
 
   function draw_demand_voronoi() {
@@ -200,10 +198,10 @@ function DemandAllocationLayer() {
     var v_cells = me.voronoi_cells_layer.selectAll(".voronoicells").data(voronoi_cell_data)
 
     v_cells
-            .style("fill-opacity", 0.5)
-            .attr("d", function(d) {
-                return path_generator(d)
-            })
+      .style("fill-opacity", 0.5)
+      .attr("d", function(d) {
+          return path_generator(d)
+      })
       
   }
 
