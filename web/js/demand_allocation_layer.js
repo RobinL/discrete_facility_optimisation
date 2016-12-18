@@ -40,14 +40,15 @@ function DemandAllocationLayer() {
     update_demand_circles()
     update_demand_lines()
     update_demand_voronoi()
+    update_voronoi_borders()
 
   }
 
   this.draw_from_scratch = function() {
 
 
+
         //Get layers 
-    
         me.voronoi_cells_layer = d3.select("#voronoi_cells_layer")
         me.demand_lines_layer = d3.select("#demand_lines_layer")
         me.demand_points_layer = d3.select("#demand_points_layer")
@@ -55,11 +56,11 @@ function DemandAllocationLayer() {
         me.voronoi_borders_layer = d3.select("#voronoi_borders_layer")
         me.clip_path_layer = d3.select("#clip_path_layer")
 
-        
         draw_demand_circles()
         draw_demand_lines()
         draw_demand_voronoi()
         draw_clipping_mask()
+        draw_voronoi_borders()
 
         this.update()
 
@@ -156,7 +157,7 @@ function DemandAllocationLayer() {
     var min = VMT.model.min_allocation
     var max = VMT.model.max_allocation
     var line_colour_scale = VMT.utils.get_colour_scale_from_min_max_and_range_linear(min, max, colour_range)
-    var line_width_scale = d3.scaleLinear().domain([min,max]).range([0,3])
+    var line_width_scale = d3.scaleLinear().domain([min,max]).range([0.5,3])
     
     me.demand_lines_layer.selectAll(".demand_data_lines")
           .data(d3_data)
@@ -172,7 +173,6 @@ function DemandAllocationLayer() {
             .style("stroke-width", function(d) {
                 return line_width_scale(d.allocation_size)
             })
-
   }
 
   function draw_demand_voronoi() {
@@ -188,7 +188,6 @@ function DemandAllocationLayer() {
             })
           
           .on("mouseover", voronoi_cell_on_mouseover)
-
   }
 
   function update_demand_voronoi() {
@@ -201,10 +200,8 @@ function DemandAllocationLayer() {
       .style("fill-opacity", 0.5)
       .attr("d", function(d) {
           return path_generator(d)
-      })
-      
+      })  
   }
-
 
   function voronoi_cell_on_mouseover() {
     
@@ -214,6 +211,13 @@ function DemandAllocationLayer() {
     var html = template(template_dict);
 
     d3.select('#debug_panel').html(html)
+  }
+
+  function draw_voronoi_borders() {
+
+  }
+
+  function update_voronoi_borders() {
 
   }
 

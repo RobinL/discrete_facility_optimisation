@@ -53,6 +53,21 @@ var UtilityFunctions = function() {
         }, 0) / (arr.length === 0 ? 1 : arr.length);
     }
 
+    this.draw_options = function(selector, data) {
+
+      d3.select(selector).selectAll('option')
+          .data(data)
+          .enter()
+          .append("option")
+          .attr("value", function(d) {
+              return d["value"]
+          })
+          .text(function(d) {
+              return d["text"]
+          })
+
+    };
+
 
 }
 

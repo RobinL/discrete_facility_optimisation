@@ -159,9 +159,14 @@ Demand.prototype = {
     },
 
     get top_allocation_time() {
-        var sid = this.top_allocation.supply_object.supply_id
-        var stats =  this.supply_source_stats[sid]
-        return stats[VMT.settings.optimisation_target]
+        try {
+            var sid = this.top_allocation.supply_object.supply_id
+            var stats =  this.supply_source_stats[sid]
+            return stats[VMT.settings.optimisation_target]
+        }
+        catch(err) {
+            return "Not allocated"
+        }
     },
 
     get top_allocation() {

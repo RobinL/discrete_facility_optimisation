@@ -28,17 +28,17 @@ function MapHolder() {
 
 	var me = this
 
-	this.redraw = function() {
+	this.initiate_bounds = function() {
 
 
-        var bounds = this.map.getBounds(),
-            topLeft = this.map.latLngToLayerPoint(bounds.getNorthWest()),
-            bottomRight = this.map.latLngToLayerPoint(bounds.getSouthEast())
+        var bounds = me.map.getBounds(),
+            topLeft = me.map.latLngToLayerPoint(bounds.getNorthWest()),
+            bottomRight = me.map.latLngToLayerPoint(bounds.getSouthEast())
         
 
         //The SVG overlay needs to cover the whole of the map area
-        this.svg.style("width", this.map.getSize().x + 'px')
-                .style("height", this.map.getSize().y + 'px')
+        me.svg.style("width", me.map.getSize().x + 'px')
+                .style("height", me.map.getSize().y + 'px')
                 .style("margin-left", topLeft.x + "px")
                 .style("margin-top", topLeft.y + "px");;
 
@@ -65,7 +65,9 @@ function MapHolder() {
         return {x:point.x, y:point.y}
     }
 
-    this.redraw()
+    // this.map.on('viewreset moveend', this.redraw);
+
+    this.initiate_bounds()
 
 
 }

@@ -23,9 +23,15 @@ VMTs.colour_options = {
 
 VMTs.duration_thresholds = [30,60,120]
 
-
 VMTs.supply_cols = ["supply","supply_id","supply_lat","supply_lng","supply_name"]
 VMTs.demand_cols = ["demand","demand_id","demand_lat","demand_lng","demand_name"]
 
 VMTs.demand_point_colour_scheme = VMT.utils.first_in_dict(VMTs.colour_options)
 VMTs.demand_line_colour_scheme = VMT.utils.first_in_dict(VMTs.colour_options)
+
+VMTs.csv_files = [ {"text": "Random 10 supply 60 demand", 
+                    "value": "data/data2.csv"},
+					{"text": "Random 3 supply 6 demand", 
+                    "value": "data/data.csv"},
+                    
+                  ]

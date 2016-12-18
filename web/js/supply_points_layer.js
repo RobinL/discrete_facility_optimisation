@@ -5,9 +5,7 @@ function SupplyPointsLayer() {
     
     this.draw_from_scratch = function() {
 
-        VMT.mapholder.redraw()
-
-        //Get layer 
+        d3.select("#supply_location_layer").selectAll("*").remove()
         g = d3.select("#supply_location_layer")
         
         //Now our 'current points' contain all the information we need to draw the voronoi map
@@ -21,6 +19,9 @@ function SupplyPointsLayer() {
         
         supply_locations_sel.append("circle")
             .attr("class", "supply_locations")
+            .on("click", supply_on_click)
+
+        this.update()
 
     }
 
@@ -33,8 +34,7 @@ function SupplyPointsLayer() {
         var va = facility_locations_sel
             .data(me.suppliers_array)
 
-        va
-            .attr("cy", function(d) {
+        va.attr("cy", function(d) {
                 return d.y
             })
             .attr("cx", function(d) {
@@ -69,10 +69,15 @@ function SupplyPointsLayer() {
         })
     }
 
+    function supply_on_click() {
+        var supply_id = this.__data__.supply_id
+        VMT.controller.toggle_supplier(supply_id)
+    }
+
     var me = this;
     this.controller = VMT.controller;
     this.draw_from_scratch()
-    this.update()
+    
 
 }
 SupplyPointsLayer.prototype ={
