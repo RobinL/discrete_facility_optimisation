@@ -21,4 +21,3 @@ Interface.prototype = {
 		return this.controls["data_csv_select"].node().value
 	}
 }
-
