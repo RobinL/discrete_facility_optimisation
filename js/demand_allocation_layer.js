@@ -7,9 +7,6 @@ function DemandAllocationLayer() {
 
   var me = this;
 
-
-
-
   //Take the geojson stream and convert to the leaflet coordinate system
   function leafletProjectPoint(x, y) {
       var point = VMT.mapholder.map.latLngToLayerPoint(new L.LatLng(y, x));
@@ -40,7 +37,6 @@ function DemandAllocationLayer() {
   this.update = function() {
     
     //Update data
-
     update_demand_circles()
     update_demand_lines()
     update_demand_voronoi()
@@ -208,9 +204,9 @@ function DemandAllocationLayer() {
             .attr("d", function(d) {
                 return path_generator(d)
             })
-        
-
+      
   }
+
 
   function voronoi_cell_on_mouseover() {
     
@@ -218,7 +214,6 @@ function DemandAllocationLayer() {
     var source = $("#debug_demand_info").html();
     var template = Handlebars.compile(source);
     var html = template(template_dict);
-    debugger;
 
     d3.select('#debug_panel').html(html)
 

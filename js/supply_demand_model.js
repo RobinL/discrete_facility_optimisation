@@ -47,6 +47,18 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         return allocation_order
     }
 
+    function get_demanders_order_from_moving_average(ma_order) {
+        var dc = me.demand_collection
+
+        var allocation_order = _.sortBy(dc.demanders, function(demander) {
+            
+            return -demander.moving_average_relative_loss[ma_order]
+        })
+
+        return allocation_order
+
+    }
+
 
 
     function reset_all_allocations() {
@@ -59,8 +71,11 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         
         reset_all_allocations()
 
+        var allocation_counter = 1
         _.each(demand_objects_in_order, function(demand) {
             demand.allocate_to_supply_in_closeness_order(me.supply_collection)
+            demand.update_loss_stats_by_allocation_order(demand.loss,allocation_counter, add_to_counter=true)
+            allocation_counter += 1
         })
         
     }
@@ -104,14 +119,22 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
     this.allocate_each_demand_to_closest_supply_in_closeness_order = function() {
 
-        // First need to 
         var demand_order = get_demanders_order_in_order_of_distance_to_nearest_supply()
         me.allocate_from_order(demand_order)
                 
     }
 
+    this.allocate_each_demand_iterate_order = function(ma_order) {
+        var demand_order = get_demanders_order_from_moving_average(ma_order)
+        me.allocate_from_order(demand_order)
+    }
+
     this.compute_best_possible_loss()
     this.allocate_each_demand_to_closest_supply_in_closeness_order()
+    this.allocate_each_demand_iterate_order(3)
+
+    // Iteratively allocate based on greatest loss.
+
 
 
 }
@@ -164,36 +187,36 @@ SupplyAndDemandModel.prototype = {
 }
 
 
-row = {
-  "demand": 21.6620191555,
-  "demand_id": "0",
-  "demand_lat": 50.9201278763,
-  "demand_lng": -2.67073887071,
-  "demand_name": "Green Ln",
-  "supply": 35.6895004806,
-  "supply_id": 0,
-  "supply_lat": 51.7493139942,
-  "supply_lng": -0.240862847712,
-  "supply_name": "Roehyde Way",
-  "duration_min": 158.883333333,
-  "distance_crowflies_km": 192.761854658,
-  "distance_route_km": 235.458
-}
+// row = {
+//   "demand": 21.6620191555,
+//   "demand_id": "0",
+//   "demand_lat": 50.9201278763,
+//   "demand_lng": -2.67073887071,
+//   "demand_name": "Green Ln",
+//   "supply": 35.6895004806,
+//   "supply_id": 0,
+//   "supply_lat": 51.7493139942,
+//   "supply_lng": -0.240862847712,
+//   "supply_name": "Roehyde Way",
+//   "duration_min": 158.883333333,
+//   "distance_crowflies_km": 192.761854658,
+//   "distance_route_km": 235.458
+// }
 
 
 
-s = new Supply(row)
-d1 = new Demand(row)
-s.set_demand_source_stats(row)
-d1.set_supply_source_stats(row)
+// s = new Supply(row)
+// d1 = new Demand(row)
+// s.set_demand_source_stats(row)
+// d1.set_supply_source_stats(row)
 
 
-console.log("---Before allocation---")
-console.log(`s.is_full is: ${s.is_full}`)
-console.log(`s.supply_unallocated is: ${s.supply_unallocated}`)
-console.log(`s.supply_allocated is: ${s.supply_allocated}`)
+// console.log("---Before allocation---")
+// console.log(`s.is_full is: ${s.is_full}`)
+// console.log(`s.supply_unallocated is: ${s.supply_unallocated}`)
+// console.log(`s.supply_allocated is: ${s.supply_allocated}`)
 
-s.attempt_one_allocation(d1)
+// s.attempt_one_allocation(d1)
 
 // console.log("---After allocation---")
 // console.log(`s.is_full is: ${s.is_full}`)

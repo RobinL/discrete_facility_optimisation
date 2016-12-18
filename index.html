@@ -12,17 +12,28 @@
 
   <div id='map'></div>
 
+  <div id="debug_panel">
+
+  </div>
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/2.2.0/topojson.min.js"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="http://underscorejs.org/underscore-min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
 
   <script src="js/namespace.js"></script>
   <script src="js/utilities.js"></script>
   <script src="js/settings.js"></script>
   <script src="js/csv_process.js"></script>
+  <script src="js/supply.js"></script>
+  <script src="js/demand.js"></script>
+  <script src="js/allocation.js"></script>
+  <script src="js/supply_collection.js"></script>
+  <script src="js/demand_collection.js"></script>
+
   <script src="js/supply_demand_model.js"></script>
   <script src="js/controller.js"></script>
 
@@ -31,6 +42,50 @@
   <script src="js/demand_allocation_layer.js"></script>
 
   <script src="js/main.js"></script>
+
+  <script id="debug_demand_info" type="text/x-handlebars-template">
+	<table class="overall_stats">
+		<tr>
+			<td class="overall_stats">Demand name:</td>
+			<td> {{demand_name}}</td>
+		</tr>
+    <tr>
+      <td class="overall_stats">Demand id:</td>
+      <td> {{demand_id}}</td>
+    </tr>
+		<tr>
+			<td class="overall_stats">Demand allocated:</td>
+			<td> {{short_number demand_allocated}}</td>
+		</tr>
+		<tr>
+			<td class="overall_stats">Demand unallocated:</td>
+			<td> {{demand_unallocated}}</td>
+		</tr>
+		<tr>
+			<td class="overall_stats">Largest allocation:</td>
+			<td> {{top_allocation.supply_object.supply_name}}</td>
+		</tr>
+	
+
+	</table>
+
+	<table>
+	<tr>
+		<th>Supply name</th>
+		<th>Supply id</th>
+		<th>Allocation size</th>
+	</tr>
+	{{#each allocations}}
+	<tr>
+		<td>{{this.supply_object.supply_name}}</td>
+		<td>{{this.supply_object.supply_id}}</td>
+		<td>{{short_number this.allocation_size}}</td>
+     </tr>
+    {{/each}}
+    </table>
+
+
+  </script>	
 
 </body>
 </html

@@ -54,8 +54,11 @@ function Demand(row) {
     this.supply_source_stats = {}
     this.supply_ids_ordered_by_closest = [] 
 	this.loss_stats_by_allocation_order = {}
+    this.allocation_order_array = []
 
     this.update_loss_stats_by_allocation_order = function(loss, order, add_to_counter=true) {
+        
+        // Add to counter = false enables us to run this code without tracking the results of that run.
 
         if (add_to_counter) {
             var addition = 1;
@@ -82,6 +85,54 @@ function Demand(row) {
             me.loss_stats_by_allocation_order[order] = update;
 
         }
+
+        me.loss_stats_by_allocation_order[order]["relative"] = me.loss_stats_by_allocation_order[order].loss - me.loss_stats_by_allocation_order[1].loss
+
+        if (add_to_counter) {
+            me.allocation_order_array.push(order)
+            moving_average_loss()
+        }
+
+        
+
+       
+    }
+
+    function moving_average_loss() {
+
+        function get_item(this_array, index) {
+
+            var this_slice = this_array.slice(index)
+            if (this_slice.length == 0) {
+                return this_slice[0]
+            } else {
+                return this_slice[0]
+            }
+        }
+
+        function ma(ma_order) {
+
+            var values = []
+
+            _.each(d3.range(1,ma_order + 1), function(index) {
+                var this_key = get_item(me.allocation_order_array,index*-1)
+                var stats = me.loss_stats_by_allocation_order[this_key]
+                values.push(stats.relative)
+            })
+
+            return VMT.utils.get_mean(values)
+            
+
+        }
+
+        me.moving_average_relative_loss = {}
+        // Finally calculate moving average loss
+        if (me.allocation_order_array.length > 0) {
+            _.each(d3.range(1,6), function(ma_order) {
+                me.moving_average_relative_loss[ma_order] = ma(ma_order)
+            })
+        }
+
 
     }
 

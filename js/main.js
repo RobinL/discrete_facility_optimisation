@@ -35,3 +35,7 @@ function startup(ajax_topo_data, ajax_csv_data) {
     VMT.demand_allocation_layer = new DemandAllocationLayer()
 
 }
+
+function redraw() {
+	
+}
