@@ -108,7 +108,7 @@ function DemandAllocationLayer() {
     var min = VMT.model.demand_collection.min_demand
     var max = VMT.model.demand_collection.max_demand
 
-    var point_colour_scale = VMT.utils.get_colour_scale_from_min_max_and_range_linear(min, max, colour_range)
+    var point_colour_scale = VMT.utils.get_colour_scale_from_min_max_and_range_linear(0, max, colour_range)
     var circles = me.demand_points_layer.selectAll(".locations_circles")
             .data(VMT.model.demand_collection_array)
 
@@ -152,12 +152,11 @@ function DemandAllocationLayer() {
     })
 
     // Line 
-
     var colour_range = VMT.settings.demand_line_colour_scheme 
     var min = VMT.model.min_allocation
     var max = VMT.model.max_allocation
-    var line_colour_scale = VMT.utils.get_colour_scale_from_min_max_and_range_linear(min, max, colour_range)
-    var line_width_scale = d3.scaleLinear().domain([min,max]).range([0.5,3])
+    var line_colour_scale = VMT.utils.get_colour_scale_from_min_max_and_range_linear(0, max, colour_range)
+    var line_width_scale = d3.scaleLinear().domain([0,max]).range([0,3])
     
     me.demand_lines_layer.selectAll(".demand_data_lines")
           .data(d3_data)
