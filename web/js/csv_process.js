@@ -245,6 +245,7 @@ function CsvProcessor(csv_data,
     }
 
     var me = this;
+    // _.each(csv_data, function(d) {d["supply"] = d["supply"]*100})
     this.manual_overrides = _.clone(manual_overrides)
     this.original_csv_data = _.clone(csv_data)
     process_column_descriptions()

@@ -49,6 +49,12 @@ SupplyCollection.prototype = {
             return a + b.supply
         },0)
 
+    },
+
+    get total_supply_allocated() {
+        return _.reduce(this.suppliers, function(a,b) {
+            return a + b.supply_allocated
+        },0)
     }
 
 }

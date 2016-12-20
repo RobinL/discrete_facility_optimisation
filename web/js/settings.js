@@ -3,7 +3,7 @@ var VMTs = VMT.settings
 
 // Paths to data
 VMTs.shapefile_path = "topojson/uk_boundaries.json"
-VMTs.csv_path = "data/data2.csv"
+VMTs.csv_path = "data/data.csv"
 
 // Which variable to use to optimise
 VMTs.optimisation_target = "duration_min"
@@ -29,9 +29,11 @@ VMTs.demand_cols = ["demand","demand_id","demand_lat","demand_lng","demand_name"
 VMTs.demand_point_colour_scheme = VMT.utils.first_in_dict(VMTs.colour_options)
 VMTs.demand_line_colour_scheme = VMT.utils.first_in_dict(VMTs.colour_options)
 
-VMTs.csv_files = [ {"text": "Random 10 supply 60 demand", 
-                    "value": "data/data2.csv"},
+VMTs.csv_files = [ 
 					{"text": "Random 3 supply 6 demand", 
                     "value": "data/data.csv"},
                     
+
+					{"text": "Random 10 supply 60 demand", 
+                    "value": "data/data2.csv"},
                   ]
