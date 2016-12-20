@@ -116,11 +116,6 @@ function Demand(row) {
 	this.loss_stats_by_allocation_order = {}
     this.allocation_order_array = []  
 
-
-
-
-
-
 }
 
 Demand.prototype = {
@@ -138,7 +133,7 @@ Demand.prototype = {
 
 
     get is_fully_allocated() {
-    	if (this.demand_unallocated <=0) {
+    	if (this.demand_unallocated <=1e-5) {  //not zero to account for floating point errors
     		return true
     	} else {
     		return false
@@ -158,9 +153,9 @@ Demand.prototype = {
             
     },
 
-    get top_allocation_time() {
+    get largest_allocation_time() {
         try {
-            var sid = this.top_allocation.supply_object.supply_id
+            var sid = this.largest_allocation.supply_object.supply_id
             var stats =  this.supply_source_stats[sid]
             return stats[VMT.settings.optimisation_target]
         }
@@ -169,12 +164,25 @@ Demand.prototype = {
         }
     },
 
-    get top_allocation() {
+    get largest_allocation() {
         // Sort allocations by allocation size and return
+
+        if (_.keys(this.allocations).length==0) {
+            return null;
+        }
         return _.max(this.allocations, function(a) {
-            return a.allocation_size
+            return a.allocation_size;
         })
 
+    },
+
+    get largest_allocation_id() {
+        var this_largest_allocation = this.largest_allocation
+        if (this_largest_allocation == null) {
+            return "unassigned"
+        } else {
+            return this_largest_allocation.supply_object.supply_id
+        }
     }
 
     

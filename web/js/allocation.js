@@ -1,4 +1,3 @@
-
 function Allocation(demand_object, supply_object, allocation_size) {
 	var me = this;
     this.demand_object = demand_object;
@@ -10,7 +9,6 @@ function Allocation(demand_object, supply_object, allocation_size) {
         delete this.demand_object.allocations[this.supply_object.supply_id]
         delete this.supply_object.allocations[this.demand_object.demand_id]
     }
-
 
 }
 

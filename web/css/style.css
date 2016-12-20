@@ -14,8 +14,6 @@ body {
   width:100%;
 }
 
-
-
 .padded_options {
   position:absolute;
   left: 0;
@@ -83,29 +81,31 @@ path {
   fill-opacity: 1;
   stroke: #000000;
   stroke-width: 0.4px;
+    pointer-events: none;
+
 }
+
 
 
 path.voronoi_borders {
   fill: none;
-  stroke: #0065FD;
-  stroke-width: 2px;
+  stroke: #05D7FD;
+  stroke-width: 4px;
+  pointer-events: none;
 }
 
-path.voronoi_borders:hover {
-  stroke-width: 2.5px;
+.leaflet-pane .voronoi_cells {
+  fill-opacity: 0.7;
+  pointer-events: all
 }
 
-path.no-data {
-  fill-opacity: .1;
-  stroke: #fff;
-  stroke-width: .5px;
+.voronoi_cell_highlight {
+  fill: #026476;
 }
 
-path.no-data:hover {
-  stroke-width: 2.5px;
+.demand_line {
+  pointer-events: none;
 }
-
 
 .leaflet-container {
     background: #fff;
@@ -113,7 +113,7 @@ path.no-data:hover {
 }
 
 /*Leaflet overrides*/
-.leaflet-pane > svg path,
+/*.leaflet-pane > svg path,*/
 .leaflet-tile-container {
   pointer-events: all;
   }

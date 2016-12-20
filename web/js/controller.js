@@ -40,9 +40,6 @@ function Controller() {
 				active_suppliers.push(supplier.supply_id+"")
 			}
 		})
-
-
-		
 		return _.contains(active_suppliers, row["supply_id"]+"")
 	}
 
@@ -73,7 +70,6 @@ function Controller() {
 	this.update_suppliers = function() {
 		me.filter_data()
 		VMT.model = new SupplyAndDemandModel(VMT.csv_processed)
-		debugger;
 		VMT.mapholder.reset_all_layers()
     	VMT.mapholder.initiate_bounds()
     	VMT.supply_points_layer.draw_from_scratch()
@@ -85,7 +81,5 @@ function Controller() {
 		me.suppliers_info[supplier_id]["active"] = !me.suppliers_info[supplier_id]["active"]
 		me.update_suppliers()
 	}
-
-	
 
 }

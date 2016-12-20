@@ -68,6 +68,12 @@ var UtilityFunctions = function() {
 
     };
 
+    this.remove_punctuation_and_whitespace = function(mystr){
+      var mystr = mystr.toString()
+      return  mystr.replace(/[^\w\s]|_/g, "")
+         .replace(/\s+/g, "");
+    }
+
 
 }
 

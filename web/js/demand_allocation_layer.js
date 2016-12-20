@@ -173,6 +173,7 @@ function DemandAllocationLayer() {
             .style("stroke-width", function(d) {
                 return line_width_scale(d.allocation_size)
             })
+            .attr("class", "demand_line")
   }
 
   function draw_demand_voronoi() {
@@ -180,12 +181,14 @@ function DemandAllocationLayer() {
     // Need to get suitable datastructure.
     // Each demand has a 'topallocation'
     var voronoi_cell_data = voronoi_fn.polygons(VMT.model.demand_collection_array)
-    var v_cells = me.voronoi_cells_layer.selectAll(".voronoicells").data(voronoi_cell_data)
+    var v_cells = me.voronoi_cells_layer.selectAll(".voronoi_cells").data(voronoi_cell_data)
     v_cells.enter().append("path")
-            .attr("class", "voronoicells")
-            .attr("fill", function(d) {
-                return "black"
+            .attr("class", function(d) {
+              var class_name = "voronoi_cells"
+              var id = VMT.utils.remove_punctuation_and_whitespace(d.data.largest_allocation_id)
+              return class_name + " supplyid" + id
             })
+        
           
           .on("mouseover", voronoi_cell_on_mouseover)
   }
@@ -194,16 +197,24 @@ function DemandAllocationLayer() {
 
     var voronoi_cell_data = voronoi_fn.polygons(VMT.model.demand_collection_array)
 
-    var v_cells = me.voronoi_cells_layer.selectAll(".voronoicells").data(voronoi_cell_data)
+    var v_cells = me.voronoi_cells_layer.selectAll(".voronoi_cells").data(voronoi_cell_data)
 
     v_cells
-      .style("fill-opacity", 0.5)
+      
       .attr("d", function(d) {
           return path_generator(d)
       })  
   }
 
   function voronoi_cell_on_mouseover() {
+
+    // Highlight this class
+    var this_class = ".supplyid" + this.__data__.data.largest_allocation_id
+
+    d3.selectAll(".voronoi_cells").classed("voronoi_cell_highlight", false);
+    d3.selectAll(this_class).classed("voronoi_cell_highlight", true);
+
+    //Populate hover box
     
     var template_dict = this.__data__.data
     var source = $("#debug_demand_info").html();
@@ -214,6 +225,30 @@ function DemandAllocationLayer() {
   }
 
   function draw_voronoi_borders() {
+
+
+
+    var transform = d3.geoTransform({
+            point: nullProjectPoint
+        })
+    var path = d3.geoPath().projection(transform);
+
+    var voronoi_topo = computeTopology(voronoi_fn(VMT.model.demand_collection_array));
+
+    var multilinestring =  topojson.mesh(voronoi_topo, voronoi_topo.objects.voronoi,
+                 function(a, b) {return a.data.largest_allocation_id !==  b.data.largest_allocation_id });
+
+    me.voronoi_borders_layer
+          .selectAll(".voronoi_borders").remove()
+
+
+    me.voronoi_borders_layer
+          .selectAll(".voronoi_borders")
+          .data([multilinestring])
+          .enter()
+          .append("path")
+          .attr("class", "voronoi_borders")
+          .attr("d", path)
 
   }
 

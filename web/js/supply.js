@@ -84,7 +84,7 @@ Supply.prototype = {
     },
 
     get is_full() {
-    	if (this.supply_unallocated <=0) {
+    	if (this.supply_unallocated <= 1e-5) {  //not zero to account for floating point errors
     		return true
     	} else {
     		return false

@@ -1,22 +1,5 @@
 // Notes:
-// We want to allocate demand to supply, not vice veras
-
-// But note that a single demand_source can be allocated to multiple supply_sources
-// Because partial allocation is possible
-
-// Given supply, we need a loss-ordered list of demands
-
-// 
-
-//SWAP STRATEGY:
-//Precompute 'list of neighbours' for each demand point as soon as we see the 'demand points'
-//To compute a swap, unallocate from a, and its neighbour b.  
-//Allocate to a then b
-//Allocate to b then a
-//Choose the best loss.
-
-
-//FIRST THING - write well-organised code that simply allocates each demand to closest court, unless it's full, in which case, do not allocate
+// Could attempt to reduce supply incrementally and reallocate each point as required to 2nd best etc.
 
 var optimisation_target = "duration_min"  //Where's best to put this?
 
@@ -60,7 +43,9 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         reset_all_allocations()
 
         var allocation_counter = 1
+
         _.each(demand_objects_in_order, function(demand) {
+            // if (demand.demand_id == "0") { debugger;}
             demand.allocate_to_supply_in_closeness_order(me.supply_collection, allocation_counter)
             allocation_counter += 1
         })
@@ -125,7 +110,6 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
         // Original loss
         var original_loss = a.loss + b.loss
-
         
         a.unallocate_all_supply()
         b.unallocate_all_supply()
@@ -154,6 +138,9 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         _.each(me.demand_collection_array, function(demander) {
             
             var neighbours = _.map(demander.neighbours, function(d) {return d})
+            // var neighbours = _.map(d)
+            // debugger;
+             // var neighbours = _.map(me.demand_collection.demanders, function(d) {return d})
 
             _.each(neighbours, function(neighbour) {
                 attempt_swap(neighbour, demander)
@@ -161,27 +148,24 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         })
     }
 
-    
 
     this.compute_best_possible_loss()
+    // console.log(_.keys(this.supply_collection.suppliers).length)
     this.allocate_each_demand_to_closest_supply_in_closeness_order()
 
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 30; i++) {
         this.allocate_by_marginal_loss()
         console.log(me.total_loss)
     }
+
     console.log("----")
-    for (var i = 0; i < 4; i++) {
+
+    for (var i = 0; i < 10; i++) {
         this.reallocate_pairwise()
         console.log(me.total_loss)
     }
-    
-  
-    
 
     // Iteratively allocate based on greatest loss.
-
-
 
 }
 
