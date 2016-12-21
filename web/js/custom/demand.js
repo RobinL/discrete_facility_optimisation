@@ -58,12 +58,12 @@ function Demand(row) {
         for (var i = 0; i < me.supply_ids_ordered_by_closest.length; i++) {
             
             var supply_id = me.supply_ids_ordered_by_closest[i]
-            if (!(me.is_fully_allocated)) {
+            var this_supply = supply_collection.suppliers[supply_id]
+            if (!(this_supply.is_full)) {
                 break;
             }
             
         }
-        var this_supply = supply_collection.suppliers[supply_id]
 
         this_supply.attempt_one_allocation(me)
 

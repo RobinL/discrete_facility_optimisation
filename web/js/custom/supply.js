@@ -12,6 +12,10 @@ function Supply(row) {
     	if (me.is_full) {
     		return false
     	}
+
+        if (demand_object.is_fully_allocated) {
+            return false
+        }
     	
     	else if (me.supply_unallocated >= demand_object.demand_unallocated) {  //Supply exceeds demand
     		allocation_size = demand_object.demand_unallocated

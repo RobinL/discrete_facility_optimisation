@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/leaflet.css" />  <!-- https://unpkg.com/leaflet@1.0.2/dist/leaflet.css -->
     <link rel="stylesheet" href="css/style.css"/>
 </head>
 
@@ -27,35 +27,41 @@
 
   </div>
 
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/2.2.0/topojson.min.js"></script>
+<!--   <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/2.2.0/topojson.min.js"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
+ -->  
+  <script src="js/third_party/topojson.min.js"></script>
+  <script src="js/third_party/d3.v4.min.js"></script>
+  <script src="js/third_party/underscore-min.js"></script>
+  <script src="js/third_party/jquery.min.js"></script>
+  <script src="js/third_party/leaflet.js"></script>
+  <script src="js/third_party/handlebars.min.js"></script>
 
-  <script src="js/namespace.js"></script>
-  <script src="js/utilities.js"></script>
-  <script src="js/settings.js"></script>
-  <script src="js/csv_process.js"></script>
+  <script src="js/custom/namespace.js"></script>
+  <script src="js/custom/utilities.js"></script>
+  <script src="js/custom/settings.js"></script>
+  <script src="js/custom/csv_process.js"></script>
 
-  <script src="js/build_interface.js"></script>
+  <script src="js/custom/build_interface.js"></script>
 
  
-  <script src="js/supply.js"></script>
-  <script src="js/demand.js"></script>
-  <script src="js/allocation.js"></script>
-  <script src="js/supply_collection.js"></script>
-  <script src="js/demand_collection.js"></script>
-  <script src="js/supply_demand_model.js"></script>
-  <script src="js/controller.js"></script>
+  <script src="js/custom/supply.js"></script>
+  <script src="js/custom/demand.js"></script>
+  <script src="js/custom/allocation.js"></script>
+  <script src="js/custom/supply_collection.js"></script>
+  <script src="js/custom/demand_collection.js"></script>
+  <script src="js/custom/supply_demand_model.js"></script>
+  <script src="js/custom/controller.js"></script>
 
-  <script src="js/map.js"></script>
-  <script src="js/supply_points_layer.js"></script>
-  <script src="js/demand_allocation_layer.js"></script>
+  <script src="js/custom/map.js"></script>
+  <script src="js/custom/supply_points_layer.js"></script>
+  <script src="js/custom/demand_allocation_layer.js"></script>
 
-  <script src="js/main.js"></script>
+  <script src="js/custom/main.js"></script>
 
   <script id="debug_demand_info" type="text/x-handlebars-template">
 	<table class="overall_stats">
