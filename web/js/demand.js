@@ -53,6 +53,22 @@ function Demand(row) {
         }
     }
 
+    this.allocate_to_closest_available_supply = function(supply_collection) {
+        
+        for (var i = 0; i < me.supply_ids_ordered_by_closest.length; i++) {
+            
+            var supply_id = me.supply_ids_ordered_by_closest[i]
+            if (!(me.is_fully_allocated)) {
+                break;
+            }
+            
+        }
+        var this_supply = supply_collection.suppliers[supply_id]
+
+        this_supply.attempt_one_allocation(me)
+
+    }
+
     function update_loss_stats(record_stats, allocation_order) {
 
         update_loss_stats_by_allocation_order(record_stats, allocation_order)

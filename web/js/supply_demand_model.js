@@ -129,77 +129,71 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         save_allocations("original_allocation")
 
         // Want to allocate the demand from a and b optimally
-        var original_loss = demand_a.loss + demand_b.loss
-        console.log(`Total allocation before was ${demand_a.demand_allocated + demand_b.demand_allocated}`)
+
+
+        // AAAABBBB
+        // BBBBAAAA
+        // ABABABA
+        // BABABABA
+        
+        demand_a.unallocate_all_supply()
+        demand_b.unallocate_all_supply()
+        demand_a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+        demand_b.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+        save_allocations("AAABBB")
+        
+        demand_a.unallocate_all_supply()
+        demand_b.unallocate_all_supply()
+        demand_a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+        demand_b.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+        save_allocations("BBBAAA")
 
         demand_a.unallocate_all_supply()
         demand_b.unallocate_all_supply()
+        for (var i = 0; i < 10; i++) {
+            debugger;
+            demand_a.allocate_to_closest_available_supply(me.supply_collection)
+            demand_b.allocate_to_closest_available_supply(me.supply_collection)
+        }
+        save_allocations("ABABAB")
 
 
-        // We can get a list of supply_source_stats from each demander
-        var supply_closeness_order = []
+        demand_a.unallocate_all_supply()
+        demand_b.unallocate_all_supply()
+        for (var i = 0; i < 10; i++) {
+            demand_b.allocate_to_closest_available_supply(me.supply_collection)
+            demand_a.allocate_to_closest_available_supply(me.supply_collection)
+        }
+        save_allocations("BABABA")
 
-        _.each(demand_a.supply_source_stats, function(stats, supplier_id) {
-            var cloned_stats = _.clone(stats)
-            cloned_stats["demand"] = demand_a
-            supply_closeness_order.push(cloned_stats)
+        var best_allocation_object = _.min(saved_allocations, function(d) {
+            return d.loss
         })
-        _.each(demand_b.supply_source_stats, function(stats, supplier_id) {
-            var cloned_stats = _.clone(stats)
-            cloned_stats["demand"] = demand_b
-            supply_closeness_order.push(cloned_stats)
+        best_allocations = best_allocation_object.allocations 
+
+        // Apply allocations 
+        demand_a.unallocate_all_supply()
+        demand_b.unallocate_all_supply()
+
+        // Now register best allocations 
+        _.each(best_allocations, function(this_allocation) {
+            this_allocation.demand_object.allocations[this_allocation.supply_object.supply_id] = this_allocation
+            this_allocation.supply_object.allocations[this_allocation.demand_object.demand_id] = this_allocation
+
         })
         
 
-        supply_closeness_order = _.sortBy(supply_closeness_order, function(d) {
-            return d[optimisation_target]
-        }) 
+        if (best_allocation_object.loss < saved_allocations["original_allocation"].loss) {
+            var aa = best_allocation_object.loss
+            var bb = saved_allocations["original_allocation"].loss
+
+            var best_total = _.reduce(best_allocation_object.allocations, function(a,b){return a + b.allocation_size},0)
+            var orig_total = _.reduce(saved_allocations["original_allocation"].allocations, function(a,b){return a + b.allocation_size},0)
+
+            debugger;
+        }
 
         
-        // Problem with this is that if demand cannot be allocated it's not allocated at all
-        _.each(supply_closeness_order, function(d) {
-            var s = me.supply_collection.suppliers[d.supply_id]
-            s.attempt_one_allocation(d["demand"])
-
-        })
-
-        var new_loss = demand_a.loss + demand_b.loss
-
-        console.log(`Total allocation after was ${demand_a.demand_allocated + demand_b.demand_allocated}`)
-        console.log(`Reduction in loss is ${original_loss-new_loss}`)
-
-
-
-
-        // Want list of suppliers in order of closeness from A or B which are not full
-
-
-
-
-
-        // // Original loss
-        // var original_loss = a.loss + b.loss
-        
-        // a.unallocate_all_supply()
-        // b.unallocate_all_supply()
-        // a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
-        // b.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
-
-        // var new_loss_ab = a.loss + b.loss  
-
-        // a.unallocate_all_supply()
-        // b.unallocate_all_supply()
-        // b.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
-        // a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
-
-        // var new_loss_ba = a.loss + b.loss  
-
-        // if (new_loss_ab<new_loss_ba) {
-        //     a.unallocate_all_supply()
-        //     b.unallocate_all_supply()
-        //     a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
-        //     b.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
-        // }
 
     }
 
@@ -208,7 +202,7 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
             
             var neighbours = _.map(demander.neighbours, function(d) {return d})
             // debugger;
-             var neighbours = _.map(me.demand_collection.demanders, function(d) {return d})
+             // var neighbours = _.map(me.demand_collection.demanders, function(d) {return d})
 
             _.each(neighbours, function(neighbour) {
                 if (neighbour.demand_id != demander.demand_id)
@@ -230,7 +224,7 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
     console.log("----")
 
-    for (var i = 0; i < 1; i++) {
+    for (var i = 0; i < 5; i++) {
         // console.log(`Total supply allocated before: model ${me.supply_collection.total_supply_allocated}`)
         this.reallocate_pairwise()
         console.log(me.total_loss)
