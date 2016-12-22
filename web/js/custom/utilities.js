@@ -72,7 +72,30 @@ var UtilityFunctions = function() {
       var mystr = mystr.toString()
       return  mystr.replace(/[^\w\s]|_/g, "")
          .replace(/\s+/g, "");
+    };
+
+    this.render_handlebars_html = function(source_selector, data) {
+      
+      var source = $(source_selector).html();
+      var template = Handlebars.compile(source);
+      var html = template(data);
+      return html
+    };
+
+    this.get_null_supplier = function() {
+
+        var row = {
+          "supply": 0,
+          "supply_id": "unassigned",
+          "supply_lat": 0,
+          "supply_lng": 0,
+          "supply_name": "Unassigned",
+        }
+        var s = new Supply(row)
+        return s
+
     }
+      
 
 
 }

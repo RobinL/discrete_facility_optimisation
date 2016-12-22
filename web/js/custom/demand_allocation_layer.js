@@ -46,8 +46,6 @@ function DemandAllocationLayer() {
 
   this.draw_from_scratch = function() {
 
-
-
         //Get layers 
         me.voronoi_cells_layer = d3.select("#voronoi_cells_layer")
         me.demand_lines_layer = d3.select("#demand_lines_layer")
@@ -142,19 +140,21 @@ function DemandAllocationLayer() {
       var s = allocation.supply_object
       var supply_point =  VMT.mapholder.latlng_to_xy(s.supply_lat, s.supply_lng)
       var allocation_size = allocation.allocation_size
+      var loss = allocation.loss
       return {
         x1: demand_point.x,
         y1: demand_point.y,
         x2: supply_point.x,
         y2: supply_point.y,
-        allocation_size: allocation_size
+        allocation_size: allocation_size,
+        loss: loss
       }
     })
 
     // Line 
     var colour_range = VMT.settings.demand_line_colour_scheme 
-    var min = VMT.model.min_allocation
-    var max = VMT.model.max_allocation
+    var min = VMT.model.min_loss
+    var max = VMT.model.max_loss
     var line_colour_scale = VMT.utils.get_colour_scale_from_min_max_and_range_linear(0, max, colour_range)
     var line_width_scale = d3.scaleLinear().domain([0,max]).range([0,3])
     
@@ -167,10 +167,10 @@ function DemandAllocationLayer() {
             .attr("x2", function(d) {return d.x2})
             .attr("y2", function(d) {return d.y2})
             .style("stroke", function(d) {
-                return line_colour_scale(d.allocation_size)
+                return line_colour_scale(d.loss)
             })
             .style("stroke-width", function(d) {
-                return line_width_scale(d.allocation_size)
+                return line_width_scale(d.loss)
             })
             .attr("class", "demand_line")
   }
@@ -215,10 +215,21 @@ function DemandAllocationLayer() {
 
     //Populate hover box
     
-    var template_dict = this.__data__.data
-    var source = $("#debug_demand_info").html();
-    var template = Handlebars.compile(source);
-    var html = template(template_dict);
+    var items_to_render = []
+    items_to_render.push({selector:"#model_summary", data: VMT.model})
+    items_to_render.push({selector:"#supply_info", data: this.__data__.data.largest_supplier})
+    items_to_render.push({selector:"#supply_allocation_info", data: this.__data__.data.largest_supplier})
+    items_to_render.push({selector:"#demand_info", data: this.__data__.data})
+    items_to_render.push({selector:"#demand_allocation_info", data: this.__data__.data})
+
+    var htmls = []
+
+    _.each(items_to_render, function(d) {
+      var html = VMT.utils.render_handlebars_html(d.selector, d.data)
+      htmls.push(html)
+    })
+
+    var html = htmls.join("")
 
     d3.select('#debug_panel').html(html)
   }

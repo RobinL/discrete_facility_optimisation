@@ -63,55 +63,139 @@
 
   <script src="js/custom/main.js"></script>
 
-  <script id="debug_demand_info" type="text/x-handlebars-template">
-	<table class="overall_stats">
-		<tr>
-			<td class="overall_stats">Demand name:</td>
-			<td> {{demand_name}}</td>
-		</tr>
-    <tr>
-      <td class="overall_stats">Demand id:</td>
-      <td> {{demand_id}}</td>
-    </tr>
-		<tr>
-			<td class="overall_stats">Demand allocated:</td>
-			<td> {{short_number demand_allocated}}</td>
-		</tr>
-		<tr>
-			<td class="overall_stats">Demand unallocated:</td>
-			<td> {{demand_unallocated}}</td>
-		</tr>
-		<tr>
-			<td class="overall_stats">Largest allocation:</td>
-			<td> {{top_allocation.supply_object.supply_name}}</td>
-		</tr>
-    <tr>
-      <td class="overall_stats">Travel time to largest allocation:</td>
-      <td> {{short_number this.top_allocation_time}}</td>
-    </tr>
-	
+  <script id="model_summary" type="text/x-handlebars-template">
+  <h2 class="info_header">Model summary</h2>
+    <table class="stats_table">
+      <tr>
+        <th>Total demand</th>
+        <td>{{short_number this.demand_collection.total_demand}}</td>
+      </tr>
+      <tr>
+        <th>Demand unallocated</th>
+        <td>{{short_number this.demand_unallocated}}</td>
+      </tr>
 
-	</table>
+      <tr>
+        <th>Total supply</th>
+        <td>{{short_number this.supply_collection.total_supply}}</td>
+      </tr>
 
-	<table>
-	<tr>
-		<th>Supply name</th>
-		<th>Supply id</th>
-		<th>Allocation size</th>
-    <th>Loss</th>
-	</tr>
-	{{#each allocations}}
-	<tr>
-		<td>{{this.supply_object.supply_name}}</td>
-		<td>{{this.supply_object.supply_id}}</td>
-		<td>{{short_number this.allocation_size}}</td>
-    <td>{{short_number this.loss}}</td>
-     </tr>
-    {{/each}}
+      <tr>
+        <th>Supply unallocated</th>
+        <td>{{short_number this.supply_unallocated}}</td>
+      </tr>
+
+      <tr>
+        <th>Total loss</th>
+        <td>{{short_number this.total_loss}}</td>
+      </tr>
+   
     </table>
 
+  </script> 
 
-  </script>	
+  <script id="supply_info" type="text/x-handlebars-template">
+    <h2 class="info_header">Supply info</h2>
+    <table class="stats_table">
+      <tr>
+        <th>Supply name:</th>
+        <td>{{this.supply_name}}</td>
+      </tr>
+      <tr>
+        <th>Supply ID:</th>
+        <td>{{this.supply_id}}</td>
+      </tr>
+      <tr>
+        <th>Supply allocated:</th>
+        <td>{{short_number this.supply_allocated}}</td>
+      </tr>
+      <tr>
+        <th>Supply unallocated:</th>
+        <td>{{short_number this.supply_unallocated}}</td>
+      </tr>
+      <tr>
+        <th>Demand from demanders closest to this supply</th>
+        <td>{{short_number this.demand_for_supply_if_all_closest_allocated}}</td>
+      </tr>
+
+
+      
+    </table>
+  </script> 
+
+ <script id="supply_allocation_info" type="text/x-handlebars-template">
+    <h2 class="info_header">Alocations to this supply</h2>
+
+    <table class="listing_table">
+    <tr>
+      <th>Demand name</th>
+      <th>Demand id</th>
+      <th>Allocation size</th>
+      <th>Loss</th>
+    </tr>
+    {{#each allocations}}
+    <tr>
+      <td>{{this.demand_object.demand_name}}</td>
+      <td>{{this.demand_object.demand_id}}</td>
+      <td>{{short_number this.allocation_size}}</td>
+      <td>{{short_number this.loss}}</td>
+       </tr>
+      {{/each}}
+    </table>
+  </script> 
+
+  <script id="demand_allocation_info" type="text/x-handlebars-template">
+    <h2 class="info_header">Alocations from this demand</h2>
+
+    <table class="listing_table">
+    <tr>
+      <th>Supply name</th>
+      <th>Supply id</th>
+      <th>Allocation size</th>
+      <th>Loss</th>
+    </tr>
+    {{#each allocations}}
+    <tr>
+      <td>{{this.supply_object.supply_name}}</td>
+      <td>{{this.supply_object.supply_id}}</td>
+      <td>{{short_number this.allocation_size}}</td>
+      <td>{{short_number this.loss}}</td>
+       </tr>
+      {{/each}}
+    </table>
+  </script> 
+
+  <script id="demand_info" type="text/x-handlebars-template">
+    <h2 class="info_header">Demand info </h2>
+  	<table class="stats_table">
+  		<tr>
+  			<th>Demand name:</th>
+  			<td> {{demand_name}}</td>
+  		</tr>
+      <tr>
+        <th>Demand id:</th>
+        <td> {{demand_id}}</td>
+      </tr>
+  		<tr>
+  			<th>Demand allocated:</th>
+  			<td> {{short_number demand_allocated}}</td>
+  		</tr>
+  		<tr>
+  			<th>Demand unallocated:</th>
+  			<td> {{short_number demand_unallocated}}</td>
+  		</tr>
+  		<tr>
+  			<th>Largest allocation:</th>
+  			<td> {{largest_allocation.supply_object.supply_name}}</td>
+  		</tr>
+      <tr>
+        <th>Travel time to largest allocation:</th>
+        <td> {{short_number this.largest_allocation_time}}</td>
+      </tr>
+  	
+    	</table>
+
+    </script>	
 
 </body>
 </html

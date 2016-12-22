@@ -30,8 +30,6 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         return allocation_order
     }
 
-
-
     function reset_all_allocations() {
         _.each(me.allocation_collection, function(allocation) {
             allocation.unallocate()
@@ -51,8 +49,7 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         
     }
 
-
-    this.compute_best_possible_loss = function(){
+    this.compute_best_possible_loss_for_each_demand = function(){
         // For each demand object, allocate and then unallocate (i.e. compute loss for each 
         //demand if it were allocated first)
 
@@ -68,6 +65,8 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         })
 
     }
+
+
     
     this.allocate_each_demand_to_closest_supply_in_closeness_order = function() {
 
@@ -107,9 +106,7 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
     function attempt_swap(demand_a,demand_b) {
 
-
         //We can save an allocation set just as a list.  Reapplying is easy.
-
         // Start by saving original allocation 
 
         var saved_allocations = {}
@@ -127,13 +124,18 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         }
         save_allocations("original_allocation")
 
+        //////////////////////////////
+        // Efficiency considerations//
+        //////////////////////////////
+        // If A and B are both allocated to their closest court, then do not proceed.
+
+        if (demand_a.is_fully_allocated_to_closest_court & demand_b.is_fully_allocated_to_closest_court) {
+            return null;
+        }
+
+        //////////////////////////////
         // Want to allocate the demand from a and b optimally
 
-
-        // AAAABBBB
-        // BBBBAAAA
-        // ABABABA
-        // BABABABA
         demand_a.unallocate_all_supply()
         demand_b.unallocate_all_supply()
         demand_a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
@@ -146,21 +148,37 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         demand_b.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
         save_allocations("BBBAAA")
 
-        demand_a.unallocate_all_supply()
-        demand_b.unallocate_all_supply()
-        for (var i = 0; i < 10; i++) {
-            demand_a.allocate_to_closest_available_supply(me.supply_collection)
-            demand_b.allocate_to_closest_available_supply(me.supply_collection)
-        }
-        save_allocations("ABABAB")
+         //////////////////////////////
+        // Efficiency considerations//
+        //////////////////////////////
+        // If AB and BA are the same, then it's unlikely ABABA and BABAB are going to be better
 
-        demand_a.unallocate_all_supply()
-        demand_b.unallocate_all_supply()
-        for (var i = 0; i < 10; i++) {
-            demand_b.allocate_to_closest_available_supply(me.supply_collection)
-            demand_a.allocate_to_closest_available_supply(me.supply_collection)
-        }
-        save_allocations("BABABA")
+        // if (saved_allocations["AAABBB"].loss != saved_allocations["BBBAAA"].loss) {
+        //////////////////////////////
+
+            demand_a.unallocate_all_supply()
+            demand_b.unallocate_all_supply()
+            for (var i = 0; i < 10; i++) {
+                demand_a.allocate_to_closest_available_supply(me.supply_collection)
+                demand_b.allocate_to_closest_available_supply(me.supply_collection)
+                if (demand_a.is_fully_allocated & demand_b.is_fully_allocated) {
+                    break;
+                }
+
+            }
+            save_allocations("ABABAB")
+
+            demand_a.unallocate_all_supply()
+            demand_b.unallocate_all_supply()
+            for (var i = 0; i < 10; i++) {
+                demand_b.allocate_to_closest_available_supply(me.supply_collection)
+                demand_a.allocate_to_closest_available_supply(me.supply_collection)
+                if (demand_a.is_fully_allocated & demand_b.is_fully_allocated) {
+                    break;
+                }
+            }
+            save_allocations("BABABA")
+        // }   
 
         var best_allocation_object = _.min(saved_allocations, function(d) {
             return d.loss
@@ -170,54 +188,38 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         // Apply allocations 
         demand_a.unallocate_all_supply()
         demand_b.unallocate_all_supply()
-
         // Now register best allocations 
         _.each(best_allocations, function(this_allocation) {
             this_allocation.demand_object.allocations[this_allocation.supply_object.supply_id] = this_allocation
             this_allocation.supply_object.allocations[this_allocation.demand_object.demand_id] = this_allocation
-
         })
-        
-
-        if (best_allocation_object.loss < saved_allocations["original_allocation"].loss) {
-            var aa = best_allocation_object.loss
-            var bb = saved_allocations["original_allocation"].loss
-
-            var best_total = _.reduce(best_allocation_object.allocations, function(a,b){return a + b.allocation_size},0)
-            var orig_total = _.reduce(saved_allocations["original_allocation"].allocations, function(a,b){return a + b.allocation_size},0)
-        }
-
-        _.each(saved_allocations, function(a,k) {
-            var total = _.reduce(a.allocations, function(a,b){return a + b.allocation_size},0)
-            // console.log(`Allocation ${k}: ${total} `)
-        })
-        
         
 
     }
 
     this.reallocate_pairwise = function() {
-        _.each(me.demand_collection_array, function(demander) {
-            
-            // var neighbours = _.map(demander.neighbours, function(d) {return d})
-            // debugger;
-             var neighbours = _.map(me.demand_collection.demanders, function(d) {return d})
-
-            _.each(neighbours, function(neighbour) {
-                if (neighbour.demand_id != demander.demand_id)
-                attempt_swap(neighbour, demander)
+        
+        // Do a single round of 'reallocate all'
+        var dc = me.demand_collection_array
+        var demand_a = dc.pop()
+        while (dc.length > 1) {
+            _.each(dc, function(demand_b) {
+                attempt_swap(demand_a, demand_b)
             })
-        })
+            demand_a = dc.pop()
+        }
+
+        // TODO:  Could be clever here - is it safe to assume that we only need to do pairwise swaps 
+        // where one (both?) of the pairs is on a border between two supply alloactions.
     }
 
-
-    this.compute_best_possible_loss()
+    this.compute_best_possible_loss_for_each_demand()
     // console.log(_.keys(this.supply_collection.suppliers).length)
     this.allocate_each_demand_to_closest_supply_in_closeness_order()
 
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 10; i++) {
         this.allocate_by_marginal_loss()
-        console.log(me.total_loss)
+        // console.log(me.total_loss)
     }
     // console.log(`Total supply allocated: model ${me.supply_collection.total_supply_allocated}`)
 
@@ -226,9 +228,8 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
     for (var i = 0; i < 1; i++) {
         // console.log(`Total supply allocated before: model ${me.supply_collection.total_supply_allocated}`)
         this.reallocate_pairwise()
-        console.log(me.total_loss)
+        // console.log(me.total_loss)
         // console.log(`Total supply allocated after: model ${me.supply_collection.total_supply_allocated}`)
-
     }
 
     // Iteratively allocate based on greatest loss.
@@ -275,8 +276,60 @@ SupplyAndDemandModel.prototype = {
         return max_a.allocation_size
     },
 
+    get min_loss() {
+        var min_a = _.min(this.allocation_collection, function(d) {
+            return d.loss
+        })
+        return min_a.loss
+    },
+
+    get max_loss() {
+        var max_a = _.max(this.allocation_collection, function(d) {
+            return d.loss
+        })
+        return max_a.loss
+    },
+
+    get demand_allocated() {
+
+        var total_demand = this.demand_collection.total_demand
+        var reduce_fn = function(a,b) {return a + b.allocation_size};
+        var allocated = _.reduce(this.allocation_collection, reduce_fn, 0)
+
+        return allocated
+
+    },
+
+    get demand_unallocated() {
+        return this.demand_collection.total_demand  - this.demand_allocated
+    },
+
+    get supply_allocated() {
+
+        var total_supply = this.supply_collection.total_supply
+        var reduce_fn = function(a,b) {return a + b.allocation_size};
+        var allocated = _.reduce(this.allocation_collection, reduce_fn, 0)
+
+        return allocated
+
+    },
+
+    get supply_unallocated() {
+        return this.supply_collection.total_supply - this.supply_allocated
+    }
     
 }
+
+
+// Results:
+
+// Initial allocation, no iteration:  17467.19
+// Iterate marginal loss, no swap:  14691
+// Swap neighbours only AB or BA: 14709.68085
+// Swap all, AB or BA:   14263
+// Swap neighbours only AB, BA, ABAB, BABA: 14435
+// Swap all, AB, BA, ABAB, BABA:  14172
+// Swap all, AB, BA, ABAB, BABA, many iterations 14158.241263
 
 
 // row = {

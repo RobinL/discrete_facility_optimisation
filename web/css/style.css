@@ -62,10 +62,31 @@ label {
   background-color: #FFF;
   border-radius: 5px;
   padding: 8px 8px 0 8px;
-  bottom: 10px;
+  bottom: 20px;
   left: 10px;
   z-index: 314159;
+  max-height: 800px;
+  overflow: auto;
 }
+
+table, tr {
+  border: 0px solid black;
+  border-bottom: 1px solid #D2DBDB;
+
+  border-collapse: collapse;
+}
+
+table tr:nth-child(even)  {
+  background: #EBF4F4;
+
+}
+
+
+.stats_table th {
+  min-width: 200px;
+  text-align: left;
+}
+
 
 label {
   display:block;
@@ -90,7 +111,7 @@ path {
 path.voronoi_borders {
   fill: none;
   stroke: #05D7FD;
-  stroke-width: 4px;
+  stroke-width: 2px;
   pointer-events: none;
 }
 

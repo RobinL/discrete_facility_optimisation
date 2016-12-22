@@ -108,6 +108,10 @@ DemandCollection.prototype = {
 
     },
 
+ 
+
+
+
     get min_demand() {
         var min_demander = _.min(this.demanders, function(d) {
             return d.demand

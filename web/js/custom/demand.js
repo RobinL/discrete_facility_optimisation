@@ -54,6 +54,10 @@ function Demand(row) {
     }
 
     this.allocate_to_closest_available_supply = function(supply_collection) {
+
+        if (me.is_fully_allocated) {
+            return null;
+        }
         
         for (var i = 0; i < me.supply_ids_ordered_by_closest.length; i++) {
             
@@ -192,6 +196,18 @@ Demand.prototype = {
 
     },
 
+    get largest_supplier() {
+        // If the largest allocation is unallocated
+        if (this.largest_allocation == null) {
+            return VMT.utils.get_null_supplier()
+        }
+        if (this.unallocated > this.largest_allocation.allocation_size) {
+            return VMT.utils.get_null_supplier()
+        } else {
+            return this.largest_allocation.supply_object
+        }
+    },
+
     get largest_allocation_id() {
         var this_largest_allocation = this.largest_allocation
         if (this_largest_allocation == null) {
@@ -199,6 +215,31 @@ Demand.prototype = {
         } else {
             return this_largest_allocation.supply_object.supply_id
         }
+    },
+
+    get number_of_allocations() {
+        return _.size(this.allocations)
+    },
+
+    get is_fully_allocated_to_closest_court() {
+
+        var num_aloc = this.number_of_allocations;
+
+        if (num_aloc > 1) {
+            return false 
+        } 
+
+        if (num_aloc ==0) {
+            return false
+        }
+
+        var allocated_id = _.keys(this.allocations)[0]
+
+        if (this.closest_supply_id == allocated_id) {
+            return true
+        }
+        return false;
+
     }
 
     

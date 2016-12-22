@@ -16,7 +16,7 @@ function Controller() {
 			_.each(supply_cols, function(col) {
 				this_supplier[col] = row[col]
 			})
-			this_supplier["active"] = true
+			// this_supplier["active"] = true
 			
 
 			me.suppliers_info[supply_id] = this_supplier

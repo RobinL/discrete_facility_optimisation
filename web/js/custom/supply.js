@@ -113,7 +113,20 @@ Supply.prototype = {
         var total_loss = 0
         var reduce_fn = function(a,b) {return a + b.loss}
         return _.reduce(this.allocations, reduce_fn ,0)
+    },
+
+    get demand_for_supply_if_all_closest_allocated() {
+        var me = this
+        var total_demand = 0
+        _.each(VMT.model.demand_collection.demanders, function(demand) {
+            if (demand.closest_supply_id == me.supply_id) {
+                total_demand += demand.demand
+            }
+        })
+
+        return total_demand
     }
+
 
     
 }
