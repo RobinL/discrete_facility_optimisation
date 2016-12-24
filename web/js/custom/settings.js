@@ -5,8 +5,7 @@ var VMTs = VMT.settings
 VMTs.shapefile_path = "topojson/uk_boundaries.json"
 VMTs.csv_path = "data/data.csv"
 
-// Which variable to use to optimise
-VMTs.optimisation_target = "duration_min"
+
 
 
 VMTs.column_descriptions_overrides = {
@@ -33,10 +32,32 @@ VMTs.csv_files = [
 					{"text": "Random 3 supply 6 demand", 
                     "value": "data/data.csv"},
                     
-
 					{"text": "Random 10 supply 60 demand", 
                     "value": "data/data2.csv"},
 
                     {"text": "Random 12 supply 140 demand", 
                     "value": "data/data3.csv"},
                   ]
+
+
+VMTs.search_intensity_lookup = {
+    "low":      {"text": "Low",  
+                "value": "low", 
+                "iterations_marginal_loss": 5, 
+                "iterations_all_pairs": 0},
+
+    "medium":   {"text": "Medium", 
+                "value": "medium", 
+                "iterations_marginal_loss": 10, 
+                "iterations_all_pairs": 0},
+
+    "high":     {"text": "High (slow)", 
+                "value": "high", 
+                "iterations_marginal_loss": 12, 
+                "iterations_all_pairs": 1},
+
+    "veryhigh": {"text": "Ultra (very slow)", 
+                "value": "veryhigh", 
+                "iterations_marginal_loss": 20, 
+                "iterations_all_pairs": 5},
+}

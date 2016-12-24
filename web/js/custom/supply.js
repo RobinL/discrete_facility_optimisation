@@ -16,8 +16,7 @@ function Supply(row) {
         if (demand_object.is_fully_allocated) {
             return false
         }
-    	
-    	else if (me.supply_unallocated >= demand_object.demand_unallocated) {  //Supply exceeds demand
+    	if (me.supply_unallocated >= demand_object.demand_unallocated || VMT.interface.unlimited_supply_mode) {  //Supply exceeds demand
     		allocation_size = demand_object.demand_unallocated
     	}
     	else { //Demand exceeds supply
@@ -71,6 +70,8 @@ function Supply(row) {
 		me[c] = row[c]
 	})
 
+    me.is_active = true;
+
 	this.reset_allocations()
 
 
@@ -88,6 +89,9 @@ Supply.prototype = {
     },
 
     get is_full() {
+
+        if (VMT.interface.unlimited_supply_mode) {return false};
+        
     	if (this.supply_unallocated <= 1e-5) {  //not zero to account for floating point errors
     		return true
     	} else {
@@ -95,18 +99,6 @@ Supply.prototype = {
     	}
     },
 
-    get toString() {
-        var lines = []
-        lines.push(`Supply ID ${this.supply_id}: ${this.supply_name}`)
-        lines.push(`Total supply: ${this.supply}`)
-        lines.push(`Allocated = ${this.supply_allocated}`)
-        _.each(this.allocations, function(a) {
-            lines.push(a.toString)
-        })
-        lines.push(`Unallocated = ${this.supply_unallocated}`)
-
-        return lines.join("\n")
-    },
 
     get loss() {
         // Iterate through allocations computing loss from each one
@@ -119,7 +111,7 @@ Supply.prototype = {
         var me = this
         var total_demand = 0
         _.each(VMT.model.demand_collection.demanders, function(demand) {
-            if (demand.closest_supply_id == me.supply_id) {
+            if (demand.closest_active_supply_id == me.supply_id) {
                 total_demand += demand.demand
             }
         })

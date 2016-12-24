@@ -48,22 +48,27 @@ label {
 
 }
 
-#hover_panel {
-  position:absolute;
-  background-color: #FFF;
-  border-radius: 5px;
-  padding: 8px 8px 0 8px;
-  bottom: 10px;
-  right: 10px;
-}
 
-#debug_panel {
+
+#stats_panel {
   position:absolute;
   background-color: #FFF;
   border-radius: 5px;
   padding: 8px 8px 0 8px;
   bottom: 20px;
   left: 10px;
+  z-index: 314159;
+  max-height: 800px;
+  overflow: auto;
+}
+
+#supply_change_panel {
+  position:absolute;
+  background-color: #FFF;
+  border-radius: 5px;
+  padding: 8px 8px 0 8px;
+  bottom: 20px;
+  right: 10px;
   z-index: 314159;
   max-height: 800px;
   overflow: auto;

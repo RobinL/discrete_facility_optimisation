@@ -43,19 +43,31 @@ function SupplyCollection(processed_csv) {
 
 SupplyCollection.prototype = {
 
-
     get total_supply() {
-        return _.reduce(this.suppliers, function(a,b) {
+        return _.reduce(this.active_suppliers, function(a,b) {
             return a + b.supply
         },0)
 
     },
 
     get total_supply_allocated() {
-        return _.reduce(this.suppliers, function(a,b) {
+        return _.reduce(this.active_suppliers, function(a,b) {
             return a + b.supply_allocated
         },0)
     },
+
+    get active_suppliers() {
+        var me = this;
+        return _.filter(me.suppliers, function(supplier) {
+            return supplier.is_active
+        })
+    },
+
+    get suppliers_array() {
+        return _.map(this.suppliers, function(d) {return d})
+    },
+
+
 
 
 

@@ -1,9 +1,9 @@
 // Notes:
 // Could attempt to reduce supply incrementally and reallocate each point as required to 2nd best etc.
 
-var optimisation_target = "duration_min"  //Where's best to put this?
 
-function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min") {
+
+function SupplyAndDemandModel(processed_csv) {
     //Has a supply collection and a demand collection
     var me = this;
     this.processed_csv = processed_csv
@@ -23,8 +23,8 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         var sc = me.supply_collection
 
         var allocation_order = _.sortBy(dc.demanders, function(demander) {
-            var closest_supply_stats = demander.supply_source_stats[demander.closest_supply_id]
-            return closest_supply_stats[optimisation_target]
+            var closest_supply_stats = demander.active_supply_source_stats[demander.closest_active_supply_id]
+            return closest_supply_stats[VMT.interface.optimisation_target]
         })
 
         return allocation_order
@@ -66,8 +66,6 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
     }
 
-
-    
     this.allocate_each_demand_to_closest_supply_in_closeness_order = function() {
 
         var demand_order = get_demanders_order_in_order_of_distance_to_nearest_supply()
@@ -144,8 +142,9 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
         
         demand_a.unallocate_all_supply()
         demand_b.unallocate_all_supply()
-        demand_a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+
         demand_b.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
+        demand_a.allocate_to_supply_in_closeness_order(me.supply_collection, -1)
         save_allocations("BBBAAA")
 
          //////////////////////////////
@@ -211,28 +210,50 @@ function SupplyAndDemandModel(processed_csv, optimisation_target="duration_min")
 
         // TODO:  Could be clever here - is it safe to assume that we only need to do pairwise swaps 
         // where one (both?) of the pairs is on a border between two supply alloactions.
+
+        // One way to be clever would be to precompute a swap list when we load in data.
     }
 
-    this.compute_best_possible_loss_for_each_demand()
-    // console.log(_.keys(this.supply_collection.suppliers).length)
-    this.allocate_each_demand_to_closest_supply_in_closeness_order()
+    this.run_model = function() {
 
-    for (var i = 0; i < 10; i++) {
-        this.allocate_by_marginal_loss()
-        // console.log(me.total_loss)
+        this.compute_best_possible_loss_for_each_demand()
+        this.allocate_each_demand_to_closest_supply_in_closeness_order()
+
+        var parameters = VMT.settings.search_intensity_lookup[VMT.interface.search_intensity]
+
+
+
+        for (var i = 0; i < parameters.iterations_marginal_loss; i++) {
+            this.allocate_by_marginal_loss()
+        }
+
+        for (var i = 0; i < parameters.iterations_all_pairs; i++) {
+            this.reallocate_pairwise()
+        }
+
+
     }
-    // console.log(`Total supply allocated: model ${me.supply_collection.total_supply_allocated}`)
 
-    console.log("----")
+    this.filter_suppliers = function() {
 
-    for (var i = 0; i < 1; i++) {
-        // console.log(`Total supply allocated before: model ${me.supply_collection.total_supply_allocated}`)
-        this.reallocate_pairwise()
-        // console.log(me.total_loss)
-        // console.log(`Total supply allocated after: model ${me.supply_collection.total_supply_allocated}`)
+        // // Copy all active suppliers to demander.supply_source_stats 
+        // VMT.mode.supply_collection.suppliers_info
+        _.each(me.demand_collection.demanders, function(demand) {
+            // Copy over active supply info.
+            demand.active_supply_source_stats = {}
+
+            _.each(me.supply_collection.active_suppliers, function(supply) {
+                var supply_id = supply.supply_id    
+                demand.active_supply_source_stats[supply_id] = demand.all_supply_source_stats[supply_id]
+            })
+        })
+
     }
 
-    // Iteratively allocate based on greatest loss.
+    this.filter_suppliers()
+    this.run_model()
+
+    
 
 }
 
@@ -353,7 +374,7 @@ SupplyAndDemandModel.prototype = {
 // s = new Supply(row)
 // d1 = new Demand(row)
 // s.set_demand_source_stats(row)
-// d1.set_supply_source_stats(row)
+// d1.set_all_supply_source_stats(row)
 
 
 // console.log("---Before allocation---")

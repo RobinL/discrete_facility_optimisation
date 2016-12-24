@@ -17,7 +17,7 @@ function Demand(row) {
         }
 
         var stats_cols = ["duration_min","distance_crowflies_km","distance_route_km", "supply_id"]
-        var d = this.supply_source_stats[row["supply_id"]] = {}
+        var d = this.all_supply_source_stats[row["supply_id"]] = {}
 
         _.each(stats_cols, function(c) {
             d[c] = row[c]
@@ -34,12 +34,13 @@ function Demand(row) {
     this.allocate_to_supply_in_closeness_order = function(supply_collection, allocation_order=1, record_stats=true) {
 
         // While there's still demand left to be allocated
-        for (var i = 0; i < me.supply_ids_ordered_by_closest.length; i++) {
-            
-            var supply_id = me.supply_ids_ordered_by_closest[i]
-            var this_supply = supply_collection.suppliers[supply_id]
+        var active_supply_ids_ordered_by_closest = me.active_supply_ids_ordered_by_closest
 
-            this_supply.attempt_one_allocation(me)
+        for (var i = 0; i < active_supply_ids_ordered_by_closest.length; i++) {
+            
+            var supply_id = active_supply_ids_ordered_by_closest[i]
+            var this_supply = supply_collection.suppliers[supply_id]
+                this_supply.attempt_one_allocation(me)
 
             if (me.is_fully_allocated) {
                 break;
@@ -59,9 +60,10 @@ function Demand(row) {
             return null;
         }
         
-        for (var i = 0; i < me.supply_ids_ordered_by_closest.length; i++) {
+        var active_supply_ids_ordered_by_closest = me.active_supply_ids_ordered_by_closest
+        for (var i = 0; i < active_supply_ids_ordered_by_closest.length; i++) {
             
-            var supply_id = me.supply_ids_ordered_by_closest[i]
+            var supply_id = active_supply_ids_ordered_by_closest[i]
             var this_supply = supply_collection.suppliers[supply_id]
             if (!(this_supply.is_full)) {
                 break;
@@ -129,9 +131,9 @@ function Demand(row) {
         return  scale(allocation_order+1) - scale(allocation_order)
     }
 
-
     this.allocations = {}
-    this.supply_source_stats = {}
+    this.all_supply_source_stats = {}
+    this.active_supply_source_stats = {}
     this.supply_ids_ordered_by_closest = [] 
 	this.loss_stats_by_allocation_order = {}
     this.allocation_order_array = []  
@@ -160,9 +162,22 @@ Demand.prototype = {
     	}
     },
 
-    get closest_supply_id() {
 
-        return this.supply_ids_ordered_by_closest[0]
+
+    get closest_active_supply_id() {
+
+        return this.active_supply_ids_ordered_by_closest[0]
+    },
+
+    get active_supply_ids_ordered_by_closest() {
+
+        var me = this;
+        var active_suppliers = _.keys(me.active_supply_source_stats)
+
+        var active_ids_closeness_order = _.filter(this.supply_ids_ordered_by_closest, function(supply_id) {
+            return _.contains(active_suppliers, supply_id.toString())
+        })
+        return active_ids_closeness_order
     },
     
     get loss() {
@@ -176,8 +191,8 @@ Demand.prototype = {
     get largest_allocation_time() {
         try {
             var sid = this.largest_allocation.supply_object.supply_id
-            var stats =  this.supply_source_stats[sid]
-            return stats[VMT.settings.optimisation_target]
+            var stats =  this.all_supply_source_stats[sid]
+            return stats[VMT.interface.optimisation_target]
         }
         catch(err) {
             return "Not allocated"
@@ -223,6 +238,7 @@ Demand.prototype = {
 
     get is_fully_allocated_to_closest_court() {
 
+
         var num_aloc = this.number_of_allocations;
 
         if (num_aloc > 1) {
@@ -235,7 +251,7 @@ Demand.prototype = {
 
         var allocated_id = _.keys(this.allocations)[0]
 
-        if (this.closest_supply_id == allocated_id) {
+        if (this.closest_active_supply_id == allocated_id) {
             return true
         }
         return false;

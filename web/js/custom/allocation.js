@@ -16,12 +16,9 @@ function Allocation(demand_object, supply_object, allocation_size) {
 Allocation.prototype = {
     get loss() {
         var supply_id = this.supply_object.supply_id
-        var loss_per_unit_size = this.demand_object.supply_source_stats[supply_id][optimisation_target]
+        var loss_per_unit_size = this.demand_object.all_supply_source_stats[supply_id][VMT.interface.optimisation_target]
         return this.allocation_size * loss_per_unit_size
     },
 
-    get toString() {
-        return `    An allocation of ${this.allocation_size} from Demander ${this.demand_object.demand_id}:${this.demand_object.demand_name}::${this.demand_object.demand} -> Supplier ${this.supply_object.supply_id}:${this.supply_object.supply_name}::${this.supply_object.supply}`
-    },
 
 }

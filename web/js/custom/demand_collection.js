@@ -42,9 +42,9 @@ function DemandCollection(processed_csv) {
 
         _.each(me.demanders, function(demander,demand_id) {
 
-            var sss = demander.supply_source_stats
+            var sss = demander.all_supply_source_stats
 
-            var sss_ordered = _.sortBy(sss, function(d) {return d["duration_min"]})
+            var sss_ordered = _.sortBy(sss, function(d) {return d[VMT.interface.optimisation_target]})
             var mapfn = function(d) {return d.supply_id}
 
             demander.supply_ids_ordered_by_closest = _.map(sss_ordered, mapfn)

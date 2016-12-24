@@ -94,6 +94,14 @@ var UtilityFunctions = function() {
         var s = new Supply(row)
         return s
 
+    },
+
+    this.options_array_to_dict = function(options) {
+      var me = this 
+      return _.map(options, function(d) {
+        return {"value": me.remove_punctuation_and_whitespace(d).toLowerCase(), "text": d}
+      })
+
     }
       
 

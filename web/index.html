@@ -20,10 +20,41 @@
         <select id="data_csv_select">
         </select>
       </div>
+
+      <div class="flex_item">
+        <label>Choose optimisation intensity:</label>
+        <select id="optimisation_intensity_select">
+        </select>
+      </div>
+
+      <div class="flex_item">
+        <label>Choose variable to optimise</label>
+        <select id="optimisation_target_select">
+        </select>
+      </div>
+
+
     </div>
   </div>
 
-  <div id="debug_panel">
+
+  
+
+  <div id="stats_panel">
+
+  </div>
+
+  <div id="supply_change_panel">
+    <h2>Change supply capacities</h2>
+    <input id="unlimited_supply_mode_checkbox" type="checkbox">Unlimited supply mode</input>
+    <label>Supplier:</label>
+    <select id="supply_to_change_select">
+    </select>
+    <label>Choose value</label>
+    <button value = "0.909090909", class= "change_supply_button", id="decrease_supply_10_pc_button">-10%</button>
+    <input id="supply_capacity_input" type="number"></input>
+    <button value = "1.1", class= "change_supply_button", id="increase_supply_10_pc_button">+10%</button>
+    
 
   </div>
 

@@ -13,10 +13,9 @@ function SupplyPointsLayer() {
         var g = d3.select("#supply_location_layer")
 
         var supply_locations_sel = g.selectAll(".supply_locations")
-            .data(me.suppliers_array)
+            .data(VMT.model.supply_collection.suppliers_array)
             .enter()
 
-        
         supply_locations_sel.append("circle")
             .attr("class", "supply_locations")
             .on("click", supply_on_click)
@@ -29,19 +28,19 @@ function SupplyPointsLayer() {
     this.update = function() {
 
         var facility_locations_sel = d3.selectAll(".supply_locations")
-        this.recalculate_supply_xys()
 
         var va = facility_locations_sel
-            .data(me.suppliers_array)
+            .data(VMT.model.supply_collection.suppliers_array)
+
 
         va.attr("cy", function(d) {
-                return d.y
+                return VMT.mapholder.latlng_to_xy(d.supply_lat, d.supply_lng).y;
             })
             .attr("cx", function(d) {
-                return d.x
+                return VMT.mapholder.latlng_to_xy(d.supply_lat, d.supply_lng).x;
             })
             .style('fill', function(d) {
-                if (d.active) {
+                if (d.is_active) {
                     return "red"
                 } else {
                     return "grey"
@@ -57,17 +56,6 @@ function SupplyPointsLayer() {
             
     }
 
-    this.recalculate_supply_xys = function() {
-        //Use leaflet's internal functions to convert the 
-        //points' lat lng into x y values corresponding to the leaflet map
-        _.each(VMT.controller.suppliers_info, function(supplier, key) {
-
-            var point = VMT.mapholder.latlng_to_xy(supplier.supply_lat, supplier.supply_lng)
-
-            supplier.x = point.x;
-            supplier.y = point.y;
-        })
-    }
 
     function supply_on_click() {
         var supply_id = this.__data__.supply_id

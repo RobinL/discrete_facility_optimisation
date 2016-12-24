@@ -32,17 +32,12 @@ function startup(ajax_topo_data, ajax_csv_data) {
 	parse_ajax_csv_data(ajax_csv_data)
     
     VMT.controller  = new Controller(VMT.csv_processed)
-    VMT.controller.filter_data()
-    VMT.controller.draw_from_scratch()
-
-	
-
+    
     VMT.mapholder.map.on("zoom", function() {
     	VMT.mapholder.reset_all_layers()
     	VMT.mapholder.initiate_bounds()
     	VMT.supply_points_layer.draw_from_scratch()
     	VMT.demand_allocation_layer.draw_from_scratch()
-    		
     })
 
     VMT.mapholder.map.on("viewreset moveend", function() {

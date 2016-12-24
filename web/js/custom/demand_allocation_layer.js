@@ -231,7 +231,7 @@ function DemandAllocationLayer() {
 
     var html = htmls.join("")
 
-    d3.select('#debug_panel').html(html)
+    d3.select('#stats_panel').html(html)
   }
 
   function draw_voronoi_borders() {
