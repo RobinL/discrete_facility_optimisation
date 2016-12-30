@@ -221,6 +221,7 @@ function DemandAllocationLayer() {
     items_to_render.push({selector:"#supply_allocation_info", data: this.__data__.data.largest_supplier})
     items_to_render.push({selector:"#demand_info", data: this.__data__.data})
     items_to_render.push({selector:"#demand_allocation_info", data: this.__data__.data})
+    items_to_render.push({selector:"#buttons", data: {}})
 
     var htmls = []
 
@@ -232,6 +233,9 @@ function DemandAllocationLayer() {
     var html = htmls.join("")
 
     d3.select('#stats_panel').html(html)
+
+    VMT.interface.update_supply_to_change_selector_mouseover(this.__data__.data.largest_allocation_id)
+    VMT.interface.update_show_hide_infopanel()
   }
 
   function draw_voronoi_borders() {

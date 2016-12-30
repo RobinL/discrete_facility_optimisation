@@ -42,9 +42,7 @@ function Controller() {
 		this.rerun()
 	}
 
-	this.change_supplier = function(select) {
-
-		var supply_id = VMT.interface.supply_id; 
+	this.change_supplier = function(supply_id) {
 
 		var supply = VMT.model.supply_collection.suppliers[supply_id].supply
 		VMT.interface.supply_capacity = supply;
@@ -68,7 +66,7 @@ function Controller() {
 		var supply_id = VMT.interface.supply_id;
 		
 		me.update_supply(supply_id, multiplier, true)
-		me.change_supplier()
+		me.change_supplier(supply_id)
 
 	}
 

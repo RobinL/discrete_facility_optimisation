@@ -61,3 +61,11 @@ VMTs.search_intensity_lookup = {
                 "iterations_marginal_loss": 20, 
                 "iterations_all_pairs": 5},
 }
+
+VMTs.show_hide_infopanel = {
+    model_summary : true,
+    supply_info : false,
+    supply_allocation_info : false,
+    demand_info : false,
+    demand_allocation_info : false,
+}

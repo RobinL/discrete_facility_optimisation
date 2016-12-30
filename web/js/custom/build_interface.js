@@ -1,6 +1,6 @@
 // TODO:
-// Have a second, optional line of controls for changing the size of supply units
-// Have a control that removes supply constraints.
+// Initial setup has unlimited supply with large number of supply and demand
+// Hide supply options when 'unlimited supply mode' is selected
 
 
 function Interface() {
@@ -50,8 +50,48 @@ function Interface() {
 		VMT.utils.draw_options("#supply_to_change_select", suppliers)
 
 		// Trigger supply on change
-		VMT.controller.change_supplier()
+		VMT.controller.change_supplier(suppliers[0]["value"])
 	}
+
+	this.update_supply_to_change_selector_mouseover = function(supply_id) {
+		me.supply_id = supply_id
+		VMT.controller.change_supplier(supply_id)
+
+	}
+
+	this.update_show_hide_infopanel = function() {
+		_.each(VMT.settings.show_hide_infopanel, function(hidden_true_false, key) {
+			var this_elem = d3.select("#" + key + "_show_hide")
+			if (hidden_true_false) { 
+				this_elem.classed("info_panel_hidden", false); 
+			} else {
+				this_elem.classed("info_panel_hidden", true); 	
+			}
+
+			var this_elem = d3.select("#show_button_"+ key)
+			if (hidden_true_false) { 
+				this_elem.classed("info_panel_hidden", true); 
+			} else {
+				this_elem.classed("info_panel_hidden", false); 	
+			}
+		})
+
+		d3.selectAll(".show_buttons").on("click", function(d) {
+			var id = this.value
+			VMT.settings.show_hide_infopanel[id] = !VMT.settings.show_hide_infopanel[id]
+			me.update_show_hide_infopanel()
+		})
+
+		d3.selectAll(".hide_button").on("click", function(d) {
+			var id = this.value
+			VMT.settings.show_hide_infopanel[id] = !VMT.settings.show_hide_infopanel[id]
+			me.update_show_hide_infopanel()
+		})
+
+
+	}
+
+	
 
 	d3.select("#data_csv_select").on("change", function(d) {
 		VMT.controller.initialise()
@@ -66,14 +106,13 @@ function Interface() {
 		VMT.controller.rerun()
 	})
 
-
-
 	d3.selectAll(".change_supply_button").on("click", function(d) {
 		VMT.controller.supply_button_click(this)
 	})
 
 	d3.select("#supply_to_change_select").on("change", function(d) {
-		VMT.controller.change_supplier(this)
+		var supply_id = me.supply_id
+		VMT.controller.change_supplier(supply_id)
 	})
 
 	d3.select("#supply_capacity_input").on("change", function(d) {

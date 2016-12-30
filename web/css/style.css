@@ -74,6 +74,30 @@ label {
   overflow: auto;
 }
 
+.info_title {
+  display: flex;
+  align-items: center;
+}
+
+.info_title_content {
+  flex: 1 0 auto;
+  justify-content: space-between;
+}
+
+.hide_button {
+  height:17px;
+  max-width:40px;
+}
+
+.show_buttons {
+  display: block;
+  width:210px;
+}
+
+.info_panel_hidden {
+  display: none;
+}
+
 table, tr {
   border: 0px solid black;
   border-bottom: 1px solid #D2DBDB;

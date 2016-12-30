@@ -95,8 +95,14 @@
   <script src="js/custom/main.js"></script>
 
   <script id="model_summary" type="text/x-handlebars-template">
-  <h2 class="info_header">Model summary</h2>
-    <table class="stats_table">
+  <div id="model_summary_show_hide">
+  
+    <div class="info_title">
+      <h2 class="info_title_content hide_header">Model summary</h2>
+      <button class="info_title_content hide_header hide_button" value="model_summary">Hide</button>
+    </div>
+
+    <table class="stats_table">  
       <tr>
         <th>Total demand</th>
         <td>{{short_number this.demand_collection.total_demand}}</td>
@@ -122,11 +128,17 @@
       </tr>
    
     </table>
+  </div>
+   
 
   </script> 
 
   <script id="supply_info" type="text/x-handlebars-template">
-    <h2 class="info_header">Supply info</h2>
+  <div id="supply_info_show_hide">
+    <div class="info_title">
+    <h2 class="info_title_content hide_header">Supply info</h2>
+    <button class="info_title_content hide_header hide_button" value = "supply_info">Hide</button>
+  </div>
     <table class="stats_table">
       <tr>
         <th>Supply name:</th>
@@ -152,10 +164,15 @@
 
       
     </table>
+    </div>  
   </script> 
 
  <script id="supply_allocation_info" type="text/x-handlebars-template">
-    <h2 class="info_header">Alocations to this supply</h2>
+ <div id="supply_allocation_info_show_hide">
+ <div class="info_title">
+    <h2 class="info_title_content hide_header">Allocations to this supply</h2>
+    <button class="info_title_content hide_header hide_button" value = "supply_allocation_info">Hide</button>
+  </div>
 
     <table class="listing_table">
     <tr>
@@ -173,10 +190,16 @@
        </tr>
       {{/each}}
     </table>
+    </div>
   </script> 
 
   <script id="demand_allocation_info" type="text/x-handlebars-template">
-    <h2 class="info_header">Alocations from this demand</h2>
+  <div id="demand_allocation_info_show_hide">
+
+     <div class="info_title">
+    <h2 class="info_title_content hide_header">Allocations from this demand</h2>
+    <button class="info_title_content hide_header hide_button" value="demand_allocation_info">Hide</button>
+  </div>
 
     <table class="listing_table">
     <tr>
@@ -194,10 +217,16 @@
        </tr>
       {{/each}}
     </table>
+    </div>
   </script> 
 
   <script id="demand_info" type="text/x-handlebars-template">
-    <h2 class="info_header">Demand info </h2>
+  <div id="demand_info_show_hide">
+      <div class="info_title">
+    <h2 class="info_title_content hide_header">Demand info</h2>
+    <button class="info_title_content hide_header hide_button" value="demand_info">Hide</button>
+  </div>
+
   	<table class="stats_table">
   		<tr>
   			<th>Demand name:</th>
@@ -225,8 +254,22 @@
       </tr>
   	
     	</table>
-
+  </div>
     </script>	
+
+    <script id="buttons" type="text/x-handlebars-template">
+    <h2 class="info_title_content hide_header">Choose info elements to show:</h2>
+
+    <button id="show_button_model_summary" class = "show_buttons" value="model_summary">Show model summary</button>
+    <button id="show_button_supply_info" class = "show_buttons" value="supply_info">Show supply info</button>
+    <button id="show_button_supply_allocation_info" class = "show_buttons" value="supply_allocation_info">Show supply allocations</button>
+    <button id="show_button_demand_info" class = "show_buttons" value="demand_info">Show demand info</button>
+    <button id="show_button_demand_allocation_info" class = "show_buttons" value="demand_allocation_info">Show demand allocations</button>
+
+    </script> 
+
+
+
 
 </body>
 </html
