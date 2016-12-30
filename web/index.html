@@ -20,7 +20,13 @@
         <select id="data_csv_select">
         </select>
       </div>
-
+      
+      <div class="flex_item scenario_select_container">
+        <label>Choose scenario:</label>
+        <select id="scenario_select">
+        </select>
+      </div>
+      
       <div class="flex_item">
         <label>Choose optimisation intensity:</label>
         <select id="optimisation_intensity_select">
@@ -36,8 +42,6 @@
 
     </div>
   </div>
-
-
   
 
   <div id="stats_panel">
@@ -46,16 +50,14 @@
 
   <div id="supply_change_panel">
     <h2>Change supply capacities</h2>
-    <input id="unlimited_supply_mode_checkbox" type="checkbox">Unlimited supply mode</input>
-    <label>Supplier:</label>
-    <select id="supply_to_change_select">
+    <input id="unlimited_supply_mode_checkbox" type="checkbox" checked>Unlimited supply mode</input>
+    <label class="unlimited_supply_hide hidden">Supplier:</label>
+    <select  class="unlimited_supply_hide hidden" id="supply_to_change_select">
     </select>
-    <label>Choose value</label>
-    <button value = "0.909090909", class= "change_supply_button", id="decrease_supply_10_pc_button">-10%</button>
-    <input id="supply_capacity_input" type="number"></input>
-    <button value = "1.1", class= "change_supply_button", id="increase_supply_10_pc_button">+10%</button>
-    
-
+    <label class = "unlimited_supply_hide hidden">Choose value</label>
+    <button value = "0.909090909", class= "change_supply_button unlimited_supply_hide hidden", id="decrease_supply_10_pc_button">-10%</button>
+    <input id="supply_capacity_input" class="unlimited_supply_hide hidden" type="number"></input>
+    <button value = "1.1", class= "change_supply_button unlimited_supply_hide hidden", id="increase_supply_10_pc_button">+10%</button>
   </div>
 
 <!--   <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/2.2.0/topojson.min.js"></script>

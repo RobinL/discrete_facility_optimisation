@@ -98,6 +98,10 @@ label {
   display: none;
 }
 
+.hidden {
+  display: none;
+}
+
 table, tr {
   border: 0px solid black;
   border-bottom: 1px solid #D2DBDB;

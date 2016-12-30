@@ -13,6 +13,7 @@ function Interface() {
 	this.controls["supply_capacity_input"] = d3.select("#supply_capacity_input")
 	this.controls["increase_supply_10_pc_button"] = d3.select("#increase_supply_10_pc_button")
 	this.controls["supply_to_change_select"] = d3.select("#supply_to_change_select")
+	this.controls["scenario_select"] = d3.select("#scenario_select")
 
 
 	function build_data_selector() {
@@ -53,6 +54,72 @@ function Interface() {
 		VMT.controller.change_supplier(suppliers[0]["value"])
 	}
 
+	function process_scenario_data(csv_data) {
+		var scenario_data = {}
+		_.each(csv_data, function(row) {
+			if (VMT.utils.key_not_in_dict(row["scenario_name"],scenario_data)) {
+				scenario_data[row["scenario_name"]] = []
+			} 
+
+				scenario_data[row["scenario_name"]].push(row)
+		})
+		me.scenario_data = scenario_data
+
+	}
+
+	function scenario_data_to_select_box() {
+		var options = [{value: "built_in_original", text: "Original"}]
+		_.each(me.scenario_data,function(value, key) {
+			options.push({value:key, text:key})
+		})
+		VMT.utils.draw_options("#scenario_select", options)	
+	}
+
+	function apply_scenario() {
+		var scenario_name = me.scenario_name;
+
+		// Turn off all suppliers and reset 
+		reset_all_suppliers(active=false)
+		// Iterate through the scenario applying its features 
+		var scenario_data = me.scenario_data[scenario_name]
+		_.each(scenario_data, function(data){ 
+			var this_supplier = VMT.model.supply_collection.suppliers[data["supply_id"]]
+			if (data["active"] == "1") {
+				this_supplier.is_active = true
+			} else {
+				this_supplier.is_active = false
+			}
+
+			this_supplier.supply = parseFloat(data["supply"])
+			debugger;
+		})
+	}
+
+
+	this.build_scenario_selector = function() {
+		// Attempt to load data.  If exists, populate, otherwise hide scenario selector
+		var data_file = me.csv_path
+		data_file = data_file.replace("datasets/", "scenarios/")
+		d3.csv(data_file, function(error, data) {
+			if (error)  {
+				// Hide the 'scenario selection' select box
+				me.scenario_data = {}
+				scenario_data_to_select_box()
+				d3.select(".scenario_select_container").classed("hidden", true)
+
+			} else {
+				// Populate and show the 'scenario selection' box
+				process_scenario_data(data)
+				scenario_data_to_select_box()
+
+				d3.select(".scenario_select_container").classed("hidden", false)
+			}
+
+		})
+		// 
+
+	}
+
 	this.update_supply_to_change_selector_mouseover = function(supply_id) {
 		me.supply_id = supply_id
 		VMT.controller.change_supplier(supply_id)
@@ -88,9 +155,7 @@ function Interface() {
 			me.update_show_hide_infopanel()
 		})
 
-
 	}
-
 	
 
 	d3.select("#data_csv_select").on("change", function(d) {
@@ -120,9 +185,33 @@ function Interface() {
 	})
 
 	d3.select("#unlimited_supply_mode_checkbox").on("change", function(d) {
+		if (me.unlimited_supply_mode) {
+			d3.selectAll(".unlimited_supply_hide").classed("hidden", true)
+		} else {
+			d3.selectAll(".unlimited_supply_hide").classed("hidden", false)
+		}
+
 		VMT.controller.rerun()
 	})
 
+	function reset_all_suppliers(active=true) {
+		_.each(VMT.model.supply_collection.suppliers, function(supplier, supply_id) {
+					supplier.is_active = active
+					supplier.supply = supplier.original_supply
+				})
+	}
+	d3.select("#scenario_select").on("change", function(d) {
+			if (me.scenario_name == "built_in_original") {
+				// Select all and reset supply volumes
+				reset_all_suppliers()
+			} else {
+				// Appply scenario
+				apply_scenario()
+			}
+			// Re run
+			VMT.controller.rerun()
+
+	})
 }
 
 Interface.prototype = {
@@ -170,7 +259,8 @@ Interface.prototype = {
 		this.controls["supply_capacity_input"].node().value = set_value
 	},
 
-
-
+	get scenario_name() {
+		return this.controls["scenario_select"].node().value 
+	}
 
 }

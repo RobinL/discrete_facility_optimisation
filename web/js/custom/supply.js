@@ -69,7 +69,8 @@ function Supply(row) {
 	_.each(supply_cols, function(c) {
 		me[c] = row[c]
 	})
-
+    // in case we need to reset supply to its original value 
+    me["original_supply"] = me["supply"]
     me.is_active = true;
 
 	this.reset_allocations()

@@ -55,9 +55,10 @@ var UtilityFunctions = function() {
 
     this.draw_options = function(selector, data) {
 
-      d3.select(selector).selectAll('option')
+      var selection = d3.select(selector).selectAll('option')
           .data(data)
-          .enter()
+          
+      selection.enter()
           .append("option")
           .attr("value", function(d) {
               return d["value"]
@@ -65,6 +66,10 @@ var UtilityFunctions = function() {
           .text(function(d) {
               return d["text"]
           })
+
+      selection.exit().remove()
+
+
 
     };
 

@@ -20,6 +20,9 @@ function Controller() {
 	    	VMT.demand_allocation_layer.draw_from_scratch()
 
 	    	VMT.interface.build_supply_to_change_selector()
+	    	VMT.interface.build_scenario_selector()
+
+
 
 		})
 	}
@@ -67,6 +70,10 @@ function Controller() {
 		
 		me.update_supply(supply_id, multiplier, true)
 		me.change_supplier(supply_id)
+
+	}
+
+	this.load_scenario = function() {
 
 	}
 

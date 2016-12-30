@@ -30,13 +30,13 @@ VMTs.demand_line_colour_scheme = VMT.utils.first_in_dict(VMTs.colour_options)
 
 VMTs.csv_files = [ 
 					{"text": "Random 3 supply 6 demand", 
-                    "value": "data/data.csv"},
+                    "value": "data/datasets/data.csv"},
                     
 					{"text": "Random 10 supply 60 demand", 
-                    "value": "data/data2.csv"},
+                    "value": "data/datasets/data2.csv"},
 
                     {"text": "Random 12 supply 140 demand", 
-                    "value": "data/data3.csv"},
+                    "value": "data/datasets/data3.csv"},
                   ]
 
 
