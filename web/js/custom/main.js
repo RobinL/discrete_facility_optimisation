@@ -2,7 +2,11 @@
 VMT.interface = new Interface()
 VMT.mapholder = new MapHolder()
 
-var p1 = $.ajax(VMT.settings.shapefile_path)
+var p1 = $.ajax({
+  dataType: "json",
+  url: VMT.settings.shapefile_path,
+});
+
 var p2 = $.ajax(VMT.interface.csv_path)
 $.when(p1, p2).done(startup)
 
@@ -45,6 +49,3 @@ function startup(ajax_topo_data, ajax_csv_data) {
     })
 
 }
-
-
-
