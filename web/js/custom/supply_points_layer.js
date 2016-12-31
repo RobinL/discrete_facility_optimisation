@@ -24,7 +24,6 @@ function SupplyPointsLayer() {
 
     }
 
-
     this.update = function() {
 
         var facility_locations_sel = d3.selectAll(".supply_locations")

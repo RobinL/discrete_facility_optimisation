@@ -1,8 +1,3 @@
-// Notes:
-// Could attempt to reduce supply incrementally and reallocate each point as required to 2nd best etc.
-
-
-
 function SupplyAndDemandModel(processed_csv) {
     //Has a supply collection and a demand collection
     var me = this;
@@ -207,9 +202,6 @@ function SupplyAndDemandModel(processed_csv) {
             })
             demand_a = dc.pop()
         }
-
-        // TODO:  Could be clever here - is it safe to assume that we only need to do pairwise swaps 
-        // where one (both?) of the pairs is on a border between two supply alloactions.
 
         // One way to be clever would be to precompute a swap list when we load in data.
     }

@@ -21,9 +21,6 @@ function Controller() {
 
 	    	VMT.interface.build_supply_to_change_selector()
 	    	VMT.interface.build_scenario_selector()
-
-
-
 		})
 	}
 
