@@ -32,7 +32,8 @@ function SupplyPointsLayer() {
         var va = facility_locations_sel
             .data(VMT.model.supply_collection.suppliers_array)
 
-
+        var max_supply = VMT.model.supply_collection.max_supply;
+        var radius_scale = d3.scaleLinear().domain([0, max_supply]).range([5,15])
         va.attr("cy", function(d) {
                 return VMT.mapholder.latlng_to_xy(d.supply_lat, d.supply_lng).y;
             })
@@ -47,7 +48,7 @@ function SupplyPointsLayer() {
                 }
             })
             .attr("r", function(d) {
-                return 10
+                return radius_scale(d.supply)
             })
             .attr("fill-opacity", function(d) {
                 return 1

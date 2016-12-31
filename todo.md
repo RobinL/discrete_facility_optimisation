@@ -1,7 +1,7 @@
 TODO:
-Change appearance of suppliers depending on their size
 Improve efficiency using the 'precompute bilateral' method
-Set up more scenarios 
+Set up more scenarios
+Key:  Loss lines, supply sizes, demand sizes.
 
 
 

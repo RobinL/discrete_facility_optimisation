@@ -4,7 +4,6 @@
 //Note that it will have to handle 
 function SupplyCollection(processed_csv) {
 
-
     function supply_exists(csv_row) {
         return _.has(me.suppliers, csv_row["supply_id"])
     }
@@ -65,6 +64,13 @@ SupplyCollection.prototype = {
 
     get suppliers_array() {
         return _.map(this.suppliers, function(d) {return d})
+    },
+
+    get max_supply() {
+        var max_supplier = _.max(this.active_suppliers, function(d) {
+            return d.supply
+        })
+        return max_supplier.supply 
     },
 
 
