@@ -1,7 +1,8 @@
 TODO:
-Improve efficiency using the 'precompute bilateral' method
+Improve efficiency using the 'precompute bilateral' method - need to do several rounds to ensure capture all possible
 Set up more scenarios
 Key:  Loss lines, supply sizes, demand sizes.
+Implement spinner when loading
 
 
 

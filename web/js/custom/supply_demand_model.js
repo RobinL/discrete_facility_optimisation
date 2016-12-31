@@ -97,6 +97,7 @@ function SupplyAndDemandModel(processed_csv) {
 
     }
 
+    // Returns improvement in loss after swap
     function attempt_swap(demand_a,demand_b) {
 
         //We can save an allocation set just as a list.  Reapplying is easy.
@@ -123,7 +124,7 @@ function SupplyAndDemandModel(processed_csv) {
         // If A and B are both allocated to their closest court, then do not proceed.
 
         if (demand_a.is_fully_allocated_to_closest_court & demand_b.is_fully_allocated_to_closest_court) {
-            return null;
+            return 0;
         }
 
         //////////////////////////////
@@ -187,13 +188,42 @@ function SupplyAndDemandModel(processed_csv) {
             this_allocation.demand_object.allocations[this_allocation.supply_object.supply_id] = this_allocation
             this_allocation.supply_object.allocations[this_allocation.demand_object.demand_id] = this_allocation
         })
-        
+
+
+        var improvement =  saved_allocations["original_allocation"].loss- best_allocation_object.loss  
+        return improvement
+
+
 
     }
 
-    this.reallocate_pairwise = function() {
-        
+
+    this.compute_useful_swaps = function() {
+
+        me.potentially_useful_swaps_array = []
+       // Do a single round of 'reallocate all'
+        var dc = me.demand_collection_array
+        var demand_a = dc.pop()
+        while (dc.length > 1) {
+            _.each(dc, function(demand_b) {
+                var improvement = attempt_swap(demand_a, demand_b)
+                if (improvement > 1e-5) {
+                    me.potentially_useful_swaps_array.push([demand_a, demand_b])
+                } 
+            })
+            demand_a = dc.pop()
+        } 
+
+    }
+
+    this.reallocate_pairwise = function() { 
         // Do a single round of 'reallocate all'
+        _.each(me.potentially_useful_swaps_array, function(d) {
+            attempt_swap(d[0],d[1])
+        })
+    }
+
+    this.reallocate_all_pairwise = function() {
         var dc = me.demand_collection_array
         var demand_a = dc.pop()
         while (dc.length > 1) {
@@ -201,19 +231,25 @@ function SupplyAndDemandModel(processed_csv) {
                 attempt_swap(demand_a, demand_b)
             })
             demand_a = dc.pop()
-        }
-
-        // One way to be clever would be to precompute a swap list when we load in data.
+        } 
     }
 
-    this.run_model = function() {
+    this.run_model = function(first_run=false) {
 
         this.compute_best_possible_loss_for_each_demand()
         this.allocate_each_demand_to_closest_supply_in_closeness_order()
 
         var parameters = VMT.settings.search_intensity_lookup[VMT.interface.search_intensity]
-
-
+        
+        if (first_run) {
+            VMT.interface.unlimited_supply_mode = false
+            for (var i = 0; i < parameters.iterations_marginal_loss; i++) {
+                this.allocate_by_marginal_loss()
+            }
+            me.compute_useful_swaps()
+            VMT.interface.unlimited_supply_mode = true
+        }
+  
 
         for (var i = 0; i < parameters.iterations_marginal_loss; i++) {
             this.allocate_by_marginal_loss()
@@ -222,6 +258,13 @@ function SupplyAndDemandModel(processed_csv) {
         for (var i = 0; i < parameters.iterations_all_pairs; i++) {
             this.reallocate_pairwise()
         }
+
+        for (var i = 0; i < parameters.iterations_from_scratch; i++) {
+            this.reallocate_all_pairwise()
+        }
+
+
+
 
 
     }
@@ -243,7 +286,7 @@ function SupplyAndDemandModel(processed_csv) {
     }
 
     this.filter_suppliers()
-    this.run_model()
+    this.run_model(first_run=true)
 
     
 

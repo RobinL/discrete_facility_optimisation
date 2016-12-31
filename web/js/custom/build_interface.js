@@ -243,6 +243,10 @@ Interface.prototype = {
 		return this.controls["unlimited_supply_mode_checkbox"].property('checked');
 	},
 
+	set unlimited_supply_mode(set_value) {
+		this.controls["unlimited_supply_mode_checkbox"].property('checked', set_value);
+	},
+
 	get supply_id() {
 		return this.controls["supply_to_change_select"].node().value
 	},
