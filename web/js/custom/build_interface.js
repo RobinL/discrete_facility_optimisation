@@ -207,6 +207,20 @@ function Interface() {
 			VMT.controller.rerun()
 
 	})
+
+	this.show_spinner = function() {
+		d3.select(".spinner2").attr("class", "spinner")
+		d3.select(".opacity_overlay2").attr("class", "opacity_overlay")		
+
+	}
+
+	this.hide_spinner = function() {
+		d3.select(".spinner").attr("class", "spinner2")
+				
+		d3.select(".opacity_overlay").attr("class", "opacity_overlay2")
+
+	}
+
 }
 
 Interface.prototype = {

@@ -9,44 +9,67 @@ function Controller() {
 	// This function is needed when the model needs to be restarted with completely new data
 	this.initialise = function() {
 		var csv_path = VMT.interface.csv_path
-		d3.csv(csv_path, function(csv_data) {
-			VMT.csv_processed = new CsvProcessor(csv_data, VMT.settings.column_descriptions_overrides)
-			VMT.model = new SupplyAndDemandModel(VMT.csv_processed)
-		    VMT.supply_points_layer = new SupplyPointsLayer();
-		    VMT.demand_allocation_layer = new DemandAllocationLayer()
-			VMT.mapholder.reset_all_layers()
-	    	VMT.mapholder.initiate_bounds()
-	    	VMT.supply_points_layer.draw_from_scratch()
-	    	VMT.demand_allocation_layer.draw_from_scratch()
+		VMT.interface.show_spinner()
+		setTimeout(function(){ 
+			d3.csv(csv_path, function(csv_data) {
+				
+			
+				VMT.csv_processed = new CsvProcessor(csv_data, VMT.settings.column_descriptions_overrides)
+				VMT.model = new SupplyAndDemandModel(VMT.csv_processed)
+			    VMT.supply_points_layer = new SupplyPointsLayer();
+			    VMT.demand_allocation_layer = new DemandAllocationLayer()
+				VMT.mapholder.reset_all_layers()
+		    	VMT.mapholder.initiate_bounds()
+		    	VMT.supply_points_layer.draw_from_scratch()
+		    	VMT.demand_allocation_layer.draw_from_scratch()
 
-	    	VMT.interface.build_supply_to_change_selector()
-	    	VMT.interface.build_scenario_selector()
+		    	VMT.interface.build_supply_to_change_selector()
+		    	VMT.interface.build_scenario_selector()
 
-	    	VMT.key = new Key()
-	    	VMT.interface.update_show_hide_infopanel()
+		    	VMT.key = new Key()
+		    	VMT.interface.update_show_hide_infopanel()
+		    	VMT.interface.hide_spinner()
+	    	
+
 		})
+		}, 10);
 	}
 
 	// this function is used when a different set of suppliers is selected.
 	this.rerun = function() {
 		
-		VMT.model.filter_suppliers()
-		
-		if (VMT.model.supply_collection.active_suppliers.length > 0) {
-			VMT.model.run_model()
-		} else {
-			// destroy all allocations 
-			VMT.model.reset_all_allocations()	
+		var test1 = (VMT.interface.search_intensity == "extreme")
+		var test2 = (VMT.interface.search_intensity == "veryhigh") & (!VMT.interface.unlimited_supply_mode)
+		if (test1 | test2) {
+			console.log("hello")
+			VMT.interface.show_spinner()
 		}
 
-		VMT.mapholder.reset_all_layers()
-    	VMT.mapholder.initiate_bounds()
-    	VMT.supply_points_layer.draw_from_scratch()
-    	VMT.demand_allocation_layer.draw_from_scratch()
+		setTimeout(function(){ 
 
-    	VMT.key.update_supply_key()
-    	VMT.key.update_loss_key()
+			VMT.model.filter_suppliers()
+			
+			if (VMT.model.supply_collection.active_suppliers.length > 0) {
+				VMT.model.run_model()
+			} else {
+				// destroy all allocations 
+				VMT.model.reset_all_allocations()	
+			}
 
+			VMT.mapholder.reset_all_layers()
+	    	VMT.mapholder.initiate_bounds()
+	    	VMT.supply_points_layer.draw_from_scratch()
+	    	VMT.demand_allocation_layer.draw_from_scratch()
+
+	    	VMT.key.update_supply_key()
+	    	VMT.key.update_loss_key()
+	    	if (test1 | test2) {
+
+				VMT.interface.hide_spinner()
+			}
+		 }, 10);
+
+			
 	}
 
 	this.toggle_supplier = function(supplier_id) {
