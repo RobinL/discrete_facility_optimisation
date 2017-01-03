@@ -1,7 +1,6 @@
 TODO:
 Bugfix:  (1) info panel when on 'not allocated' (2) error messages on hover (3) Margin and padding around buttons
 Set up more scenarios
-Key:  Loss lines, supply sizes, demand sizes.
 Implement spinner when loading
 
 
