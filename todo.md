@@ -1,7 +1,5 @@
 TODO:
-Bugfix:  (1) info panel when on 'not allocated' (2) error messages on hover (3) Margin and padding around buttons
 Set up more scenarios
-Implement spinner when loading
 
 
 

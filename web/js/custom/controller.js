@@ -12,7 +12,6 @@ function Controller() {
 		VMT.interface.show_spinner()
 		setTimeout(function(){ 
 			d3.csv(csv_path, function(csv_data) {
-				
 			
 				VMT.csv_processed = new CsvProcessor(csv_data, VMT.settings.column_descriptions_overrides)
 				VMT.model = new SupplyAndDemandModel(VMT.csv_processed)
@@ -29,9 +28,7 @@ function Controller() {
 		    	VMT.key = new Key()
 		    	VMT.interface.update_show_hide_infopanel()
 		    	VMT.interface.hide_spinner()
-	    	
-
-		})
+			})
 		}, 10);
 	}
 

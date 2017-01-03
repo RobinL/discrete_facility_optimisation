@@ -33,11 +33,12 @@ VMTs.csv_files = [ {"text": "Random 10 supply 60 demand",
                     
 					{"text": "Random 3 supply 6 demand", 
                     "value": "data/datasets/data.csv"},
-                    
-					
 
-                    {"text": "Random 12 supply 140 demand", 
-                    "value": "data/datasets/data3.csv"},
+                    {"text": "Random 8 supply 120 demand", 
+                    "value": "data/datasets/data5.csv"},
+                    
+					{"text": "Random 8 supply 100 demand", 
+                    "value": "data/datasets/data4.csv"},
                   ]
 
 
