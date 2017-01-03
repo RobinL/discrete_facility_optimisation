@@ -28,12 +28,13 @@ VMTs.demand_cols = ["demand","demand_id","demand_lat","demand_lng","demand_name"
 VMTs.demand_point_colour_scheme = VMT.utils.first_in_dict(VMTs.colour_options)
 VMTs.demand_line_colour_scheme = VMT.utils.first_in_dict(VMTs.colour_options)
 
-VMTs.csv_files = [ 
+VMTs.csv_files = [ {"text": "Random 10 supply 60 demand", 
+                    "value": "data/datasets/data2.csv"},
+                    
 					{"text": "Random 3 supply 6 demand", 
                     "value": "data/datasets/data.csv"},
                     
-					{"text": "Random 10 supply 60 demand", 
-                    "value": "data/datasets/data2.csv"},
+					
 
                     {"text": "Random 12 supply 140 demand", 
                     "value": "data/datasets/data3.csv"},
@@ -50,25 +51,25 @@ VMTs.search_intensity_lookup = {
     "medium":   {"text": "Medium", 
                 "value": "medium", 
                 "iterations_marginal_loss": 10, 
-                "iterations_all_pairs": 0,
+                "iterations_all_pairs": 1,
                 "iterations_from_scratch" : 0},
 
     "high":     {"text": "High (slow)", 
                 "value": "high", 
                 "iterations_marginal_loss": 12, 
-                "iterations_all_pairs": 3,
+                "iterations_all_pairs": 2,
                 "iterations_from_scratch" : 0},
 
     "veryhigh": {"text": "Ultra (very slow)", 
                 "value": "veryhigh", 
                 "iterations_marginal_loss": 20, 
-                "iterations_all_pairs": 2,
+                "iterations_all_pairs": 4,
                 "iterations_from_scratch" : 1},
 
     "extreme": {"text": "Extreme (super slow)", 
                 "value": "extreme", 
                 "iterations_marginal_loss": 20, 
-                "iterations_all_pairs": 2,
+                "iterations_all_pairs": 4,
                 "iterations_from_scratch" : 2}           
 }
 
@@ -78,4 +79,5 @@ VMTs.show_hide_infopanel = {
     supply_allocation_info : false,
     demand_info : false,
     demand_allocation_info : false,
+    key: false
 }

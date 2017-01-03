@@ -21,6 +21,9 @@ function Controller() {
 
 	    	VMT.interface.build_supply_to_change_selector()
 	    	VMT.interface.build_scenario_selector()
+
+	    	VMT.key = new Key()
+	    	VMT.interface.update_show_hide_infopanel()
 		})
 	}
 
@@ -28,12 +31,21 @@ function Controller() {
 	this.rerun = function() {
 		
 		VMT.model.filter_suppliers()
-		VMT.model.run_model()
+		
+		if (VMT.model.supply_collection.active_suppliers.length > 0) {
+			VMT.model.run_model()
+		} else {
+			// destroy all allocations 
+			VMT.model.reset_all_allocations()	
+		}
 
 		VMT.mapholder.reset_all_layers()
     	VMT.mapholder.initiate_bounds()
     	VMT.supply_points_layer.draw_from_scratch()
     	VMT.demand_allocation_layer.draw_from_scratch()
+
+    	VMT.key.update_supply_key()
+    	VMT.key.update_loss_key()
 
 	}
 
@@ -44,8 +56,10 @@ function Controller() {
 
 	this.change_supplier = function(supply_id) {
 
-		var supply = VMT.model.supply_collection.suppliers[supply_id].supply
-		VMT.interface.supply_capacity = supply;
+		if (supply_id != "unassigned") {
+			var supply = VMT.model.supply_collection.suppliers[supply_id].supply
+			VMT.interface.supply_capacity = supply;
+		}
 	}
 
 	this.update_supply = function(supply_id, value, is_multiplier = false) {

@@ -25,7 +25,7 @@ function SupplyAndDemandModel(processed_csv) {
         return allocation_order
     }
 
-    function reset_all_allocations() {
+    this.reset_all_allocations = function() {
         _.each(me.allocation_collection, function(allocation) {
             allocation.unallocate()
         })
@@ -33,7 +33,7 @@ function SupplyAndDemandModel(processed_csv) {
 
     this.allocate_from_order = function(demand_objects_in_order) {
         
-        reset_all_allocations()
+        this.reset_all_allocations()
 
         var allocation_counter = 1
 
@@ -49,7 +49,7 @@ function SupplyAndDemandModel(processed_csv) {
         //demand if it were allocated first)
 
         // Ensure allocations are empty
-        reset_all_allocations()
+        this.reset_all_allocations()
 
         _.each(me.demand_collection.demanders, function(demand) {
  
@@ -200,7 +200,6 @@ function SupplyAndDemandModel(processed_csv) {
 
     this.compute_useful_swaps = function() {
 
-        me.potentially_useful_swaps_array = []
        // Do a single round of 'reallocate all'
         var dc = me.demand_collection_array
         var demand_a = dc.pop()
@@ -243,10 +242,21 @@ function SupplyAndDemandModel(processed_csv) {
         
         if (first_run) {
             VMT.interface.unlimited_supply_mode = false
-            for (var i = 0; i < parameters.iterations_marginal_loss; i++) {
+            for (var i = 0; i < 1; i++) {
                 this.allocate_by_marginal_loss()
             }
+
+            me.potentially_useful_swaps_array = []
             me.compute_useful_swaps()
+            console.log(`Num swaps: ${me.potentially_useful_swaps_array.length}`)
+            me.compute_useful_swaps()
+            console.log(`Num swaps: ${me.potentially_useful_swaps_array.length}`)
+
+            me.compute_useful_swaps()
+            console.log(`Num swaps: ${me.potentially_useful_swaps_array.length}`)
+
+            me.compute_useful_swaps()
+            console.log(`Num swaps: ${me.potentially_useful_swaps_array.length}`)
             VMT.interface.unlimited_supply_mode = true
         }
   

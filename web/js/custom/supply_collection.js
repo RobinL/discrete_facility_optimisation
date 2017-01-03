@@ -67,10 +67,26 @@ SupplyCollection.prototype = {
     },
 
     get max_supply() {
-        var max_supplier = _.max(this.active_suppliers, function(d) {
-            return d.supply
-        })
-        return max_supplier.supply 
+
+        if (this.active_suppliers.length > 0) {
+            var max_supplier = _.max(this.active_suppliers, function(d) {
+                return d.supply
+            })
+            return max_supplier.supply 
+        } else {
+            return 0
+        }
+    },
+    get min_supply() {
+
+        if (this.active_suppliers.length > 0) {
+            var min_supplier = _.min(this.active_suppliers, function(d) {
+                return d.supply
+            })
+            return min_supplier.supply 
+        } else {
+            return 0
+        }
     },
 
 

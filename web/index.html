@@ -44,11 +44,14 @@
   </div>
   
 
-  <div id="stats_panel">
+  <div id="stats_panel" class = "control_padding">
+    <div id ="key_show_hide">
 
+    </div>
+    <div id="stats_panel_div"></div>
   </div>
 
-  <div id="supply_change_panel">
+  <div id="supply_change_panel" class="control_padding">
     <h2>Change supply capacities</h2>
     <input id="unlimited_supply_mode_checkbox" type="checkbox" checked>Unlimited supply mode</input>
     <label class="unlimited_supply_hide hidden">Supplier:</label>
@@ -78,6 +81,7 @@
   <script src="js/custom/utilities.js"></script>
   <script src="js/custom/settings.js"></script>
   <script src="js/custom/csv_process.js"></script>
+  <script src="js/custom/key.js"></script>
 
   <script src="js/custom/build_interface.js"></script>
 
@@ -249,6 +253,7 @@
   		<tr>
   			<th>Largest allocation:</th>
   			<td> {{largest_allocation.supply_object.supply_name}}</td>
+        
   		</tr>
       <tr>
         <th>Travel time to largest allocation:</th>
@@ -262,6 +267,8 @@
     <script id="buttons" type="text/x-handlebars-template">
     <h2 class="info_title_content hide_header">Choose info elements to show:</h2>
 
+
+    <button id="show_button_key" class = "show_buttons" value="key">Show key</button>
     <button id="show_button_model_summary" class = "show_buttons" value="model_summary">Show model summary</button>
     <button id="show_button_supply_info" class = "show_buttons" value="supply_info">Show supply info</button>
     <button id="show_button_supply_allocation_info" class = "show_buttons" value="supply_allocation_info">Show supply allocations</button>

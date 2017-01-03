@@ -1,8 +1,3 @@
-// TODO:
-// Initial setup has unlimited supply with large number of supply and demand
-// Hide supply options when 'unlimited supply mode' is selected
-
-
 function Interface() {
 
 	var me = this;
@@ -91,7 +86,6 @@ function Interface() {
 			}
 
 			this_supplier.supply = parseFloat(data["supply"])
-			debugger;
 		})
 	}
 
@@ -127,6 +121,7 @@ function Interface() {
 	}
 
 	this.update_show_hide_infopanel = function() {
+
 		_.each(VMT.settings.show_hide_infopanel, function(hidden_true_false, key) {
 			var this_elem = d3.select("#" + key + "_show_hide")
 			if (hidden_true_false) { 

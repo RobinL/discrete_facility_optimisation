@@ -48,7 +48,17 @@ label {
 
 }
 
+.control_padding button {
+  margin-bottom: 5px;
+}
 
+.control_padding input {
+  margin-bottom: 5px;
+}
+
+.control_padding select {
+  margin-bottom : 5px;
+}
 
 #stats_panel {
   position:absolute;
@@ -102,6 +112,9 @@ label {
   display: none;
 }
 
+.key_svgs {
+  display:block;
+}
 table, tr {
   border: 0px solid black;
   border-bottom: 1px solid #D2DBDB;

@@ -32,7 +32,7 @@ function SupplyPointsLayer() {
             .data(VMT.model.supply_collection.suppliers_array)
 
         var max_supply = VMT.model.supply_collection.max_supply;
-        var radius_scale = d3.scaleLinear().domain([0, max_supply]).range([5,15])
+        var radius_scale = d3.scaleLinear().domain([-0.01, max_supply,100000]).range([5,15,15])
         va.attr("cy", function(d) {
                 return VMT.mapholder.latlng_to_xy(d.supply_lat, d.supply_lng).y;
             })
