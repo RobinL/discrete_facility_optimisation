@@ -10,9 +10,22 @@ function Controller() {
 	this.initialise = function() {
 		var csv_path = VMT.interface.csv_path
 		VMT.interface.show_spinner()
+
+		//SetTimeout is used purely so the screen refreshes.
 		setTimeout(function(){ 
-			d3.csv(csv_path, function(csv_data) {
-			
+			//Need an if statement here - if csv_path is user uploaded, then behaviour is different
+
+			//Probably use promises here to control how this works
+
+            if (VMT.interface.csv_path == "user_uploaded") {
+               csv_callback(VMT.uploads.uploaded_data)    
+            } else {
+                d3.csv(csv_path, function(csv_data) {
+                    csv_callback(csv_data)
+                })
+            }
+
+		    function csv_callback(csv_data) {	
 				VMT.csv_processed = new CsvProcessor(csv_data, VMT.settings.column_descriptions_overrides)
 				VMT.model = new SupplyAndDemandModel(VMT.csv_processed)
 			    VMT.supply_points_layer = new SupplyPointsLayer();
@@ -28,7 +41,9 @@ function Controller() {
 		    	VMT.key = new Key()
 		    	VMT.interface.update_show_hide_infopanel()
 		    	VMT.interface.hide_spinner()
-			})
+			}
+
+
 		}, 10);
 	}
 
@@ -104,15 +119,34 @@ function Controller() {
 
 	}
 
-	this.load_scenario = function() {
-
-	}
 
 	this.supply_capacity_change = function(input) {
 		var value = +input.value;
 		var supply_id = VMT.interface.supply_id;
 		me.update_supply(supply_id, value, false)
 	}
+
+
+	this.upload_data_csv = function(csv_data) {
+		//Save the data to the app
+        VMT.uploads.uploaded_data = csv_data
+		
+        //Update selection box to include the upload
+        VMT.settings.csv_files.push({"text": "User uploaded", "value": "user_uploaded"})
+        
+        //Redraw the selection box
+		VMT.utils.draw_options("#data_csv_select", VMT.settings.csv_files)
+        VMT.interface.csv_path = "user_uploaded";
+        
+        //Reinitialise model
+        VMT.controller.initialise()
+	}
+
+	this.upload_scenario_csv = function() {
+
+	}
+
+
 
 	this.initialise()
 

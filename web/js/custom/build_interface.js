@@ -189,6 +189,24 @@ function Interface() {
 		VMT.controller.rerun()
 	})
 
+    d3.select("#fileupload_data").on("change", function(d) {
+        //parse data 
+        var data = null;
+        var file = this.files[0];
+        var reader = new FileReader();
+
+        reader.readAsText(file);
+        
+        reader.onload = function(event) {
+            var csvData = event.target.result;
+            csvData = d3.csvParse(csvData);
+            VMT.controller.upload_data_csv(csvData)
+   
+        }
+
+    })
+
+
 	function reset_all_suppliers(active=true) {
 		_.each(VMT.model.supply_collection.suppliers, function(supplier, supply_id) {
 					supplier.is_active = active

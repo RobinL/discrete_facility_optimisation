@@ -54,7 +54,10 @@ var UtilityFunctions = function() {
     }
 
     this.draw_options = function(selector, data) {
-
+    
+      //If there are already options there, delete them
+      d3.select(selector).selectAll('option').remove()
+      
       var selection = d3.select(selector).selectAll('option')
           .data(data)
           
