@@ -13,10 +13,8 @@ function Controller() {
 
 		//SetTimeout is used purely so the screen refreshes.
 		setTimeout(function(){ 
-			//Need an if statement here - if csv_path is user uploaded, then behaviour is different
 
-			//Probably use promises here to control how this works
-
+            //If it's user uploaded data, we don't need to make the ajax call
             if (VMT.interface.csv_path == "user_uploaded") {
                csv_callback(VMT.uploads.uploaded_data)    
             } else {
@@ -142,8 +140,10 @@ function Controller() {
         VMT.controller.initialise()
 	}
 
-	this.upload_scenario_csv = function() {
-
+	this.upload_scenario_csv = function(csv_data) {
+        //Save the data to the app
+        VMT.uploads.uploaded_scenarios = csv_data
+        VMT.interface.build_scenario_selector()
 	}
 
 

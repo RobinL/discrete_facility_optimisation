@@ -2,6 +2,8 @@
 VMT.interface = new Interface()
 VMT.mapholder = new MapHolder()
 VMT.uploads = {}
+VMT.uploads.uploaded_data = null
+VMT.uploads.uploaded_scenarios = null
 
 var p1 = $.ajax({
   dataType: "json",

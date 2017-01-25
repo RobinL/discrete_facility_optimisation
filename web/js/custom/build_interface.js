@@ -91,28 +91,47 @@ function Interface() {
 
 
 	this.build_scenario_selector = function() {
-		// Attempt to load data.  If exists, populate, otherwise hide scenario selector
-		var data_file = me.csv_path
-		data_file = data_file.replace("datasets/", "scenarios/")
-		d3.csv(data_file, function(error, data) {
-			if (error)  {
-				// Hide the 'scenario selection' select box
-				me.scenario_data = {}
-				scenario_data_to_select_box()
-				d3.select(".scenario_select_container").classed("hidden", true)
+        // Attempt to load data.  If exists, populate, otherwise hide scenario selector
+        var data_file = me.csv_path
+        data_file = data_file.replace("datasets/", "scenarios/")
+        
+        function no_scenarios() {
 
-			} else {
-				// Populate and show the 'scenario selection' box
-				process_scenario_data(data)
-				scenario_data_to_select_box()
+            // Hide the 'scenario selection' select box
+            me.scenario_data = {}
+            scenario_data_to_select_box()
+            d3.select(".scenario_select_container").classed("hidden", true)
 
-				d3.select(".scenario_select_container").classed("hidden", false)
-			}
+        }
 
-		})
-		// 
+        function use_scenario(scenario_data) {
+            // Populate and show the 'scenario selection' box
+            process_scenario_data(scenario_data)
+            scenario_data_to_select_box()
+            d3.select(".scenario_select_container").classed("hidden", false)
+        }
 
-	}
+
+        if (VMT.interface.csv_path == "user_uploaded") {
+            //If it's a user upload, have we imported any scenarios?
+            if (VMT.uploads.uploaded_scenarios === null) {
+                no_scenarios()
+            } else {
+                use_scenario(VMT.uploads.uploaded_scenarios)
+            }
+
+        } else {
+            d3.csv(data_file, function(error, data) {
+                if (error)  {
+                    no_scenarios()
+                } else {
+                    use_scenario(data)
+                }
+            })
+
+        }
+
+}
 
 	this.update_supply_to_change_selector_mouseover = function(supply_id) {
 		me.supply_id = supply_id
@@ -190,7 +209,7 @@ function Interface() {
 	})
 
     d3.select("#fileupload_data").on("change", function(d) {
-        //parse data 
+        //parse data
         var data = null;
         var file = this.files[0];
         var reader = new FileReader();
@@ -206,7 +225,22 @@ function Interface() {
 
     })
 
+    d3.select("#fileupload_scenario").on("change", function(d) {
+        var data = null;
+        var file = this.files[0];
+        var reader = new FileReader();
 
+        reader.readAsText(file);
+
+        reader.onload = function(event) {
+            var csvData = event.target.result;
+            csvData = d3.csvParse(csvData);
+            //Rebuild the 'scenario select' interface
+            VMT.controller.upload_scenario_csv(csvData)  
+        }
+        
+    })
+    
 	function reset_all_suppliers(active=true) {
 		_.each(VMT.model.supply_collection.suppliers, function(supplier, supply_id) {
 					supplier.is_active = active
