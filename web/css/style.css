@@ -68,7 +68,7 @@ label {
   bottom: 20px;
   left: 10px;
   z-index: 314159;
-  max-height: 800px;
+  max-height: 70%;
   overflow: auto;
 }
 
