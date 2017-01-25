@@ -40,6 +40,7 @@ function Interface() {
 
 
 	this.build_supply_to_change_selector = function() {
+        debugger;
 		var suppliers = VMT.model.supply_collection.suppliers
 		suppliers = _.filter(suppliers, function(d) { return d.is_active})
 		suppliers = _.map(suppliers, function(d) {return {text: d.supply_name, value: d.supply_id}})

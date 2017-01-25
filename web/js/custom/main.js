@@ -10,7 +10,7 @@ var p1 = $.ajax({
   url: VMT.settings.shapefile_path,
 });
 
-var p2 = $.ajax(VMT.interface.csv_path)
+var p2 = $.ajax(VMT.settings.csv_path)
 $.when(p1, p2).done(startup)
 
 function parse_ajax_topo_data(topo_data) {
