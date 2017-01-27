@@ -39,6 +39,48 @@ VMTs.csv_files = [ {"text": "Random 10 supply 60 demand",
                     
 					{"text": "Random 8 supply 100 demand", 
                     "value": "data/datasets/data4.csv"},
+
+                    {"text": "qa_data_01",
+                    "value": "data/testing/qa_data_01.csv"},
+
+                    {"text": "qa_data_02",
+                    "value": "data/testing/qa_data_02.csv"},
+
+                    {"text": "qa_data_03",
+                    "value": "data/testing/qa_data_03.csv"},
+
+                    {"text": "qa_data_04",
+                    "value": "data/testing/qa_data_04.csv"},
+
+                    {"text": "qa_data_05",
+                    "value": "data/testing/qa_data_05.csv"},
+
+                    {"text": "qa_data_06",
+                    "value": "data/testing/qa_data_06.csv"},
+
+                    {"text": "qa_data_07",
+                    "value": "data/testing/qa_data_07.csv"},
+
+                    {"text": "qa_data_08",
+                    "value": "data/testing/qa_data_08.csv"},
+
+                    {"text": "qa_data_09",
+                    "value": "data/testing/qa_data_09.csv"},
+
+                    {"text": "qa_data_09_geo_test",
+                    "value": "data/testing/qa_data_09_geo_proof.csv"},
+
+                    {"text": "qa_data_10",
+                    "value": "data/testing/qa_data_10.csv"},
+
+                    {"text": "qa_data_11",
+                    "value": "data/testing/qa_data_11.csv"},
+
+                    {"text": "qa_data_12",
+                    "value": "data/testing/qa_data_12.csv"},
+
+                    {"text": "qa_data_13",
+                    "value": "data/testing/qa_data_13.csv"},
                   ]
 
 
