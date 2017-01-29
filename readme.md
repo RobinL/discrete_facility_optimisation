@@ -6,6 +6,8 @@ A javascript webapp which helps to make decisions on the optimal location of fac
 
 Supposing you have `d` discrete sources of demand and `s` potential locations for supply, this webapp will enable you to analyse options for which supply points should be built, and how large they should be.  The analysis concentrates on average drive time or distance that results from different options.
 
+The user is able to activate and deactivate supply sites by clicking on them.
+
 The app is generic in that the user imports their own data on the locations of facilities into the app.  There is no backend, so all data imported is kept in the user's browser.  This means it is suitable for use even for sensitive data.
 
 The model can account for imbalances between supply and demand, and will attempt to optimally allocate supply to demand when suppliers get full, causing demanders to have to be allocated to their 2nd closest, 3rd closest supplier etc.
